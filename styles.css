@@ -1,109 +1,184 @@
-body {
+/* styles.css */
+
+/* Reset margins and paddings */
+* {
   margin: 0;
-  height: 100vh;
-  background-color: #f0f0f0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Body styles */
+body {
   font-family: Arial, sans-serif;
-  font-size: 1em;
+  
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Header styles */
+header {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
+.TitleTag{
+  font-size: .9em;
   font-weight: lighter;
+}
+
+
+
+
+/* Main content area */
+#main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden; /* Prevent overflow */
+}
+
+/* Left column: Gallery Viewer Container */
+#gallery-container {
+  width: 66.66%;
+  background-color: white;
+  position: relative;
+  overflow: hidden;
+  perspective: 1000px;
+  /* Additional styles for gallery viewer */
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.GalleryTag {
+  font-size: .9em;
+  font-weight: lighter;
+  text-align: left;
+  justify-content: left;
+  align-self: flex-start;
+  width: 100%;
+  margin: 5px;
   display: flex;
 }
 
-#gallery-container {
-  position: relative;
-  width: 70vw;
-  height: 100vh;
-  overflow: hidden;
-  perspective: 1000px;
-  background-color: white;
+/* Right column: Sidebar */
+#sidebar {
+  width: 33.33%;
+  background-color: #e1e1e1;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  overflow: auto; /* Enable scrolling if content overflows */
+}
+
+/* Map Container */
+#map-container {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
   align-items: center;
 }
 
-.picture {
-  position: absolute;
-  transition: transform 0.2s ease-in-out;
-  background-color: yellow;
-  width: 100px;
-  height: 100px;
-}
-
-.wall {
-  position: absolute;
-  background-color: #808080; /* Gray color for the walls */
-  transform-origin: center;
-}
-
-#wall-top, #wall-bottom {
-  width: 100%;
-  height: 10px;
-}
-
-#wall-top {
-  top: 0;
-}
-
-#wall-bottom {
-  bottom: 0;
-}
-
-#wall-left, #wall-right {
-  width: 10px;
-  height: 100%;
-}
-
-#wall-left {
-  left: 0;
-}
-
-#wall-right {
-  right: 0;
-}
-
-#map-container {
-  width: 30vw;
-  height: 100vh;
-  background-color: #e1e1e1;
-  padding: 20px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
 #map {
-  width: 100%;
-  height: 45%;
+  display: grid;
+  grid-template-columns: repeat(11, 30px);
+  grid-template-rows: repeat(11, 30px);
+  gap: 1px;
   background-color: white;
   border: 1px solid #ccc;
-  position: relative;
-  display: grid;
-  grid-template-columns: repeat(11, 1fr);
-  grid-template-rows: repeat(11, 1fr);
 }
 
+/* Map Cells */
 .map-cell {
-  border: 1px solid #ccc;
   box-sizing: border-box;
+  width: 30px;
+  height: 30px;
+  position: relative;
+  background-color: #f0f0f0;
 }
 
+/* Artwork Elements */
+.artwork {
+  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: olive;
+  z-index: 5;
+}
+
+/* User Marker */
 #user-marker {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  z-index: 10;
+}
+
+/* User Arrow */
+#user-arrow {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(0deg);
   width: 15px;
   height: 15px;
-  background-color: olive;
-  position: absolute;
+  background-color: white;
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  z-index: 11;
 }
 
+/* Cell Numbering */
+.map-cell div {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  color: deepskyblue;
+}
+
+/* Information Container */
 #info-container {
-  width: 100%;
-  height: 45%;
+  padding: 20px;
   background-color: #f9f9f9;
-  border: 1px solid #ccc;
-  padding: 10px;
-  box-sizing: border-box;
+  flex-shrink: 0; /* Prevent shrinking */
+}
+
+.InfoTag{
+  font-size: .9em;
+  font-weight: lighter;
+
 }
 
 #information {
-  font-size: 14px;
+  font-size: .7em;
   color: #333;
+}
+
+/* Footer styles */
+footer {
+  background-color: #333;
+  color: white;
+  padding: 10px;
+  text-align: center;
+  position: sticky;
+  bottom: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.FooterTag {
+  font-size: .6em;
+  font-weight: lighter;
+  text-align: right;
+}
+
+
+/* Optional: Adjust the map and info container heights */
+#map-container, #info-container {
+  /* Set flex properties to distribute space */
+  flex: 1;
+  overflow: auto;
 }
