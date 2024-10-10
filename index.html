@@ -2,25 +2,42 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Gallery Space</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="gallery-container" style="display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(11, 1fr);">
-        <div class="wall" id="wall-top"></div>
-        <div class="wall" id="wall-bottom"></div>
-        <div class="wall" id="wall-left"></div>
-        <div class="wall" id="wall-right"></div>
-    </div>
-    <div id="map-container">
-        <h3>Gallery Map</h3>
-        <div id="map" style="display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(11, 1fr); width: 100%; height: 100%;"></div>
-        <div id="info-container">
-            <h3>Information</h3>
-            <div id="information"></div>
+    <!-- Header -->
+    <header>
+        <h1 class="TitleTag">TSAtelier</h1>
+    </header>
+
+    <!-- Main content area -->
+    <div id="main-content">
+        <!-- Left column: Gallery Viewer Container -->
+        <div id="gallery-container">
+            <!-- Gallery viewer content -->
+        </div>
+
+        <!-- Right column: Sidebar -->
+        <div id="sidebar">
+            <!-- Map Container -->
+            <div id="map-container">
+                <h3 class="GalleryTag">Gallery Map</h3>
+                <div id="map"></div>
+            </div>
+            <!-- Information Container -->
+            <div id="info-container">
+                <h3 class="InfoTag">Information</h3>
+                <div id="information"></div>
+            </div>
         </div>
     </div>
+
+    <!-- Footer -->
+    <footer>
+        <p class="FooterTag">_RDEXENV&copy; 2024</p>
+    </footer>
+
     <script src="script.js"></script>
 </body>
 </html>
