@@ -7,17 +7,15 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div id="gallery-container">
+    <div id="gallery-container" style="display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(11, 1fr);">
         <div class="wall" id="wall-top"></div>
         <div class="wall" id="wall-bottom"></div>
         <div class="wall" id="wall-left"></div>
         <div class="wall" id="wall-right"></div>
-
-        <!-- Adding images based on provided layout -->
-                                                                                                                    </div>
+    </div>
     <div id="map-container">
         <h3>Gallery Map</h3>
-        <div id="map"></div>
+        <div id="map" style="display: grid; grid-template-columns: repeat(11, 1fr); grid-template-rows: repeat(11, 1fr); width: 100%; height: 100%;"></div>
         <div id="info-container">
             <h3>Information</h3>
             <div id="information"></div>
