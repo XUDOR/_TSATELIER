@@ -87,7 +87,7 @@ header {
   grid-template-rows: repeat(11, 30px);
   
   background-color: white;
-  border: 1px solid #ccc;
+  border: 1px solid black;
 }
 
 /* Map Cells */
@@ -96,7 +96,7 @@ header {
   width: 30px;
   height: 30px;
   position: relative;
-  background-color: #f0f0f0;
+  background-color: white;
 }
 
 /* Artwork Elements */
