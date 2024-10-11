@@ -96,18 +96,19 @@ header {
   width: 30px;
   height: 30px;
   position: relative;
+  padding: 2px; /* Reintroduce 2px padding here to offset artwork */
   background-color: white;
 }
 
 /* Artwork Elements */
 .artwork {
+  width: 100%; /* Let the artwork fill the remaining space after padding */
+  height: 100%;
+  background-color: transparent;
   box-sizing: border-box;
-  position: absolute;
-  top: 0;
-  left: 0;
-  background-color: none;
-  z-index: 5;
 }
+
+
 
 /* User Marker */
 #user-marker {
