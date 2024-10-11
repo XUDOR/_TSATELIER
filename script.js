@@ -6,60 +6,60 @@ const quadTreeGridSize = 11; // Grid is 11x11
 // Gallery data
 const galleryData = [
   // Artworks at (2,1), (3,1), and (4,1) with id 'P7'
-  { id: 'P7', x: 2, y: 1, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P7', x: 3, y: 1, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P7', x: 4, y: 1, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P7', x: 2, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P7', x: 3, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P7', x: 4, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (8,1), (9,1), and (10,1) with id 'P6'
-  { id: 'P6', x: 8, y: 1, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P6', x: 9, y: 1, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P6', x: 10, y: 1, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P6', x: 8, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P6', x: 9, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P6', x: 10, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (1,3) and (1,4) with id 'P8'
-  { id: 'P8', x: 1, y: 3, borderLeft: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P8', x: 1, y: 4, borderLeft: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P8', x: 1, y: 3, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P8', x: 1, y: 4, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (11,2) and (11,3) with id 'P5'
-  { id: 'P5', x: 11, y: 2, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P5', x: 11, y: 3, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P5', x: 11, y: 2, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P5', x: 11, y: 3, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (11,5) and (11,6) with id 'P4'
-  { id: 'P4', x: 11, y: 5, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P4', x: 11, y: 5, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
   { id: 'P4', x: 11, y: 6, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (5,6) and (6,6) with id 'P9'
-  { id: 'P9', x: 5, y: 6, borderBottom: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P9', x: 6, y: 6, borderBottom: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P9', x: 5, y: 6, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P9', x: 6, y: 6, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (5,7) and (6,7) with id 'P14'
-  { id: 'P14', x: 5, y: 7, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P14', x: 6, y: 7, borderTop: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P14', x: 5, y: 7, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P14', x: 6, y: 7, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (7,8), (7,9), and (7,10) with id 'P13'
-  { id: 'P13', x: 7, y: 8, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P13', x: 7, y: 9, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P13', x: 7, y: 10, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P13', x: 7, y: 8, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P13', x: 7, y: 9, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P13', x: 7, y: 10, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artwork at (8,8) with id 'P2'
-  { id: 'P2', x: 8, y: 8, borderLeft: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P2', x: 8, y: 8, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (11,8) and (11,9) with id 'P3'
-  { id: 'P3', x: 11, y: 8, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P3', x: 11, y: 9, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P3', x: 11, y: 8, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P3', x: 11, y: 9, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (1,9) and (1,10) with id 'P10'
-  { id: 'P10', x: 1, y: 9, borderLeft: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P10', x: 1, y: 10, borderLeft: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P10', x: 1, y: 9, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P10', x: 1, y: 10, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artwork at (8,10) with id 'P1'
-  { id: 'P1', x: 8, y: 10, borderLeft: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P1', x: 8, y: 10, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (2,11) and (3,11) with id 'P11'
-  { id: 'P11', x: 2, y: 11, borderBottom: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P11', x: 3, y: 11, borderBottom: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P11', x: 2, y: 11, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P11', x: 3, y: 11, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 
   // Artwork at (6,11) with id 'P12'
-  { id: 'P12', x: 6, y: 11, borderBottom: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P12', x: 6, y: 11, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
 ];
 
 
@@ -123,7 +123,7 @@ const wallData = [
   { x: 7, y: 8, borderRight: '3px solid black' },
   { x: 7, y: 9, borderRight: '3px solid black' },
   { x: 7, y: 10, borderRight: '3px solid black' },
-  { x: 7, y: 11, borderRight: '3px solid black'},
+  { x: 7, y: 11, borderRight: '3px solid black' },
 ];
 
 // Get references to the HTML elements
@@ -389,15 +389,19 @@ for (let y = 1; y <= quadTreeGridSize; y++) {
     // Check if this cell is an artwork
     const artwork = galleryData.find(picture => picture.x === x && picture.y === y);
     if (artwork) {
-      // Create an element to represent the artwork
+      // Example adjustment for artwork borders
       const artworkElement = document.createElement('div');
       artworkElement.classList.add('artwork');
       artworkElement.style.position = 'absolute';
       artworkElement.style.top = '0';
       artworkElement.style.left = '0';
+      artworkElement.style.margin = '0'; // Ensure no margin is applied
+      artworkElement.style.padding = '0'; // Ensure no padding is applied
+
       artworkElement.style.width = '100%';
       artworkElement.style.height = '100%';
-      artworkElement.style.boxSizing = 'border-box'; // Include padding and border in size
+
+      artworkElement.style.border = 'none'; // Control borders separately if needed
 
       // Apply padding if specified
       if (artwork.paddingTop) {
