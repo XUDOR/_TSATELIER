@@ -1,7 +1,7 @@
 // script.js
 
 // Define color variables
-let wallColor = '#FFFADF';
+let wallColor = '#87857B';
 let artworkBorderColor = '#D8DCD2';
 
 // Define the grid size
