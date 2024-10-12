@@ -346,12 +346,19 @@ document.addEventListener('keydown', (e) => {
 
 // Function to update the information panel
 function updateInformation() {
-  infoContainer.textContent = `Current Position: (${user.position.x}, ${user.position.y}) - Orientation: ${user.orientation}`;
+  // Calculate the current square number
+  const currentSquareNumber = (user.position.y - 1) * quadTreeGridSize + user.position.x;
+
+  // Update the information text with the current square number
+  infoContainer.textContent = `Current Position: (${user.position.x}, ${user.position.y}) | Square: ${currentSquareNumber} | Orientation: ${user.orientation}`;
+
+  // Check if the user is near an artwork
   const artwork = galleryData.find(picture => picture.x === user.position.x && picture.y === user.position.y);
   if (artwork) {
     infoContainer.textContent += ` - Near artwork ${artwork.id}`;
   }
 }
+
 
 // Initial update of information panel
 updateInformation();
@@ -376,6 +383,10 @@ for (let y = 1; y <= quadTreeGridSize; y++) {
     cellNumber.style.fontSize = '10px';
     cellNumber.style.color = '#EFEFE6';
     cellNumber.textContent = (y - 1) * quadTreeGridSize + x;
+
+    // Hide the cell number
+    cellNumber.style.display = 'none';
+
     cell.appendChild(cellNumber);
 
     // Check if this cell is a wall and apply wall borders
