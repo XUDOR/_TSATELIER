@@ -1,129 +1,133 @@
 // script.js
 
+// Define color variables
+let wallColor = '#FFFADF';
+let artworkBorderColor = '#D8DCD2';
+
 // Define the grid size
 const quadTreeGridSize = 11; // Grid is 11x11
 
 // Gallery data
 const galleryData = [
   // Artworks at (2,1), (3,1), and (4,1) with id 'P7'
-  { id: 'P7', x: 2, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P7', x: 3, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P7', x: 4, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P7', x: 2, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P7', x: 3, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P7', x: 4, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (8,1), (9,1), and (10,1) with id 'P6'
-  { id: 'P6', x: 8, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P6', x: 9, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P6', x: 10, y: 1, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P6', x: 8, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P6', x: 9, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P6', x: 10, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (1,3) and (1,4) with id 'P8'
-  { id: 'P8', x: 1, y: 3, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P8', x: 1, y: 4, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P8', x: 1, y: 3, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P8', x: 1, y: 4, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (11,2) and (11,3) with id 'P5'
-  { id: 'P5', x: 11, y: 2, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P5', x: 11, y: 3, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P5', x: 11, y: 2, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P5', x: 11, y: 3, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (11,5) and (11,6) with id 'P4'
-  { id: 'P4', x: 11, y: 5, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P4', x: 11, y: 6, borderRight: '2px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P4', x: 11, y: 5, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P4', x: 11, y: 6, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (5,6) and (6,6) with id 'P9'
-  { id: 'P9', x: 5, y: 6, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P9', x: 6, y: 6, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P9', x: 5, y: 6, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P9', x: 6, y: 6, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (5,7) and (6,7) with id 'P14'
-  { id: 'P14', x: 5, y: 7, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P14', x: 6, y: 7, borderTop: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P14', x: 5, y: 7, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P14', x: 6, y: 7, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (7,8), (7,9), and (7,10) with id 'P13'
-  { id: 'P13', x: 7, y: 8, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P13', x: 7, y: 9, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P13', x: 7, y: 10, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P13', x: 7, y: 8, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P13', x: 7, y: 9, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P13', x: 7, y: 10, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artwork at (8,8) with id 'P2'
-  { id: 'P2', x: 8, y: 8, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P2', x: 8, y: 8, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (11,8) and (11,9) with id 'P3'
-  { id: 'P3', x: 11, y: 8, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P3', x: 11, y: 9, borderRight: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P3', x: 11, y: 8, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P3', x: 11, y: 9, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (1,9) and (1,10) with id 'P10'
-  { id: 'P10', x: 1, y: 9, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P10', x: 1, y: 10, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P10', x: 1, y: 9, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P10', x: 1, y: 10, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artwork at (8,10) with id 'P1'
-  { id: 'P1', x: 8, y: 10, borderLeft: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P1', x: 8, y: 10, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artworks at (2,11) and (3,11) with id 'P11'
-  { id: 'P11', x: 2, y: 11, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P11', x: 3, y: 11, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P11', x: 2, y: 11, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P11', x: 3, y: 11, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 
   // Artwork at (6,11) with id 'P12'
-  { id: 'P12', x: 6, y: 11, borderBottom: '3px solid olive', paddingTop: '1px', paddingBottom: '1px' },
+  { id: 'P12', x: 6, y: 11, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
 ];
-
 
 // Wall data
 const wallData = [
   // Row 1 (Top Wall)
-  { x: 1, y: 1, borderLeft: '2px solid black', borderTop: '2px solid black' },
-  { x: 2, y: 1, borderTop: '2px solid black' },
-  { x: 3, y: 1, borderTop: '2px solid black' },
-  { x: 4, y: 1, borderTop: '2px solid black' },
-  { x: 5, y: 1, borderTop: '2px solid black' },
-  { x: 6, y: 1, borderTop: '2px solid black' },
-  { x: 7, y: 1, borderTop: '2px solid black' },
-  { x: 8, y: 1, borderTop: '2px solid black' },
-  { x: 9, y: 1, borderTop: '2px solid black' },
-  { x: 10, y: 1, borderTop: '2px solid black' },
-  { x: 11, y: 1, borderTop: '2px solid black', borderRight: '2px solid black' },
+  { x: 1, y: 1, borderLeft: `2px solid ${wallColor}`, borderTop: `2px solid ${wallColor}` },
+  { x: 2, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 3, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 4, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 5, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 6, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 7, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 8, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 9, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 10, y: 1, borderTop: `2px solid ${wallColor}` },
+  { x: 11, y: 1, borderTop: `2px solid ${wallColor}`, borderRight: `2px solid ${wallColor}` },
 
   // Left Wall (x = 1)
-  { x: 1, y: 2, borderLeft: '2px solid black' },
-  { x: 1, y: 3, borderLeft: '2px solid black' },
-  { x: 1, y: 4, borderLeft: '2px solid black' },
-  { x: 1, y: 5, borderLeft: '2px solid black' },
-  { x: 1, y: 6, borderLeft: '2px solid black' },
-  { x: 1, y: 7, borderLeft: '2px solid black' },
-  { x: 1, y: 8, borderLeft: '2px solid black' },
-  { x: 1, y: 9, borderLeft: '2px solid black' },
-  { x: 1, y: 10, borderLeft: '2px solid black' },
-  { x: 1, y: 11, borderLeft: '2px solid black', borderBottom: '2px solid black' },
+  { x: 1, y: 2, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 3, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 4, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 5, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 6, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 7, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 8, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 9, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 10, borderLeft: `2px solid ${wallColor}` },
+  { x: 1, y: 11, borderLeft: `2px solid ${wallColor}`, borderBottom: `2px solid ${wallColor}` },
 
   // Right Wall (x = 11)
-  { x: 11, y: 2, borderRight: '2px solid black' },
-  { x: 11, y: 3, borderRight: '2px solid black' },
-  { x: 11, y: 4, borderRight: '2px solid black' },
-  { x: 11, y: 5, borderRight: '2px solid black' },
-  { x: 11, y: 6, borderRight: '2px solid black' },
-  { x: 11, y: 7, borderRight: '2px solid black' },
-  { x: 11, y: 8, borderRight: '2px solid black' },
-  { x: 11, y: 9, borderRight: '2px solid black' },
-  { x: 11, y: 10, borderRight: '2px solid black' },
-  { x: 11, y: 11, borderRight: '2px solid black', borderBottom: '2px solid black' },
+  { x: 11, y: 2, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 3, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 4, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 5, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 6, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 7, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 8, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 9, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 10, borderRight: `2px solid ${wallColor}` },
+  { x: 11, y: 11, borderRight: `2px solid ${wallColor}`, borderBottom: `2px solid ${wallColor}` },
 
   // Bottom Wall (y = 11)
-  { x: 2, y: 11, borderBottom: '2px solid black' },
-  { x: 3, y: 11, borderBottom: '2px solid black' },
-  { x: 4, y: 11, borderBottom: '2px solid black' },
-  { x: 5, y: 11, borderBottom: '2px solid black' },
-  { x: 6, y: 11, borderBottom: '2px solid black' },
-  { x: 7, y: 11, borderBottom: '2px solid black' },
-  { x: 8, y: 11, borderBottom: '2px solid black' },
-  { x: 9, y: 11, borderBottom: '2px solid black' },
+  { x: 2, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 3, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 4, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 5, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 6, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 7, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 8, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 9, y: 11, borderBottom: `2px solid ${wallColor}` },
+  { x: 10, y: 11, borderBottom: `2px solid ${wallColor}` },
 
   // Inner Walls (Horizontal Wall at y = 6)
-  { x: 4, y: 6, borderBottom: '3px solid black' },
-  { x: 5, y: 6, borderBottom: '3px solid black' },
-  { x: 6, y: 6, borderBottom: '3px solid black' },
-  { x: 7, y: 6, borderBottom: '3px solid black' },
+  { x: 4, y: 6, borderBottom: `3px solid ${wallColor}` },
+  { x: 5, y: 6, borderBottom: `3px solid ${wallColor}` },
+  { x: 6, y: 6, borderBottom: `3px solid ${wallColor}` },
+  { x: 7, y: 6, borderBottom: `3px solid ${wallColor}` },
 
   // Inner Walls (Vertical Wall at x = 7)
-  { x: 7, y: 7, borderRight: '3px solid black' },
-  { x: 7, y: 8, borderRight: '3px solid black' },
-  { x: 7, y: 9, borderRight: '3px solid black' },
-  { x: 7, y: 10, borderRight: '3px solid black' },
-  { x: 7, y: 11, borderRight: '3px solid black' },
+  { x: 7, y: 7, borderRight: `3px solid ${wallColor}` },
+  { x: 7, y: 8, borderRight: `3px solid ${wallColor}` },
+  { x: 7, y: 9, borderRight: `3px solid ${wallColor}` },
+  { x: 7, y: 10, borderRight: `3px solid ${wallColor}` },
+  { x: 7, y: 11, borderRight: `3px solid ${wallColor}` },
 ];
 
 // Get references to the HTML elements
@@ -271,7 +275,7 @@ class User {
   }
 }
 
-// Initialize the user starting near the door at grid #120 (x:10, y:11)
+// Initialize the user starting near the door at grid (10,11)
 const user = new User(10, 11);
 
 // Create user marker on the map
@@ -293,7 +297,7 @@ userArrow.style.left = '50%';
 userArrow.style.transform = 'translate(-50%, -50%) rotate(0deg)';
 userArrow.style.width = '15px';
 userArrow.style.height = '15px';
-userArrow.style.backgroundColor = '#179FAD';
+userArrow.style.backgroundColor = '#efefe6'; // ++++++++++++++++++++++++++++++++++ARROW COLOUR
 userArrow.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
 userMarker.appendChild(userArrow);
 
@@ -364,7 +368,7 @@ for (let y = 1; y <= quadTreeGridSize; y++) {
     cell.style.position = 'relative';
     cell.style.zIndex = '1'; // Ensure all cells have a default z-index
 
-    // Add numbering to each cell in off-white
+    // Add numbering to each cell in off-white ++++++++++++++++++++++++++++++++++++>>>>NUMBER COLOUR HERE ... 
     const cellNumber = document.createElement('div');
     cellNumber.style.position = 'absolute';
     cellNumber.style.top = '2px';
@@ -389,7 +393,7 @@ for (let y = 1; y <= quadTreeGridSize; y++) {
     // Check if this cell is an artwork
     const artwork = galleryData.find(picture => picture.x === x && picture.y === y);
     if (artwork) {
-      // Example adjustment for artwork borders
+      // Create the artwork element
       const artworkElement = document.createElement('div');
       artworkElement.classList.add('artwork');
       artworkElement.style.position = 'absolute';
@@ -424,7 +428,33 @@ for (let y = 1; y <= quadTreeGridSize; y++) {
       cell.appendChild(artworkElement);
     }
 
-
     mapContainer.appendChild(cell);
   }
 }
+
+// Functions to update wall and artwork styles if colors change
+function updateWallStyles() {
+  const wallCells = document.querySelectorAll('.map-cell');
+  wallCells.forEach(cell => {
+    if (cell.style.borderTop) cell.style.borderTop = cell.style.borderTop.replace(/[^ ]+$/, wallColor);
+    if (cell.style.borderLeft) cell.style.borderLeft = cell.style.borderLeft.replace(/[^ ]+$/, wallColor);
+    if (cell.style.borderRight) cell.style.borderRight = cell.style.borderRight.replace(/[^ ]+$/, wallColor);
+    if (cell.style.borderBottom) cell.style.borderBottom = cell.style.borderBottom.replace(/[^ ]+$/, wallColor);
+  });
+}
+
+function updateArtworkStyles() {
+  const artworks = document.querySelectorAll('.artwork');
+  artworks.forEach(artwork => {
+    if (artwork.style.borderTop) artwork.style.borderTop = artwork.style.borderTop.replace(/[^ ]+$/, artworkBorderColor);
+    if (artwork.style.borderLeft) artwork.style.borderLeft = artwork.style.borderLeft.replace(/[^ ]+$/, artworkBorderColor);
+    if (artwork.style.borderRight) artwork.style.borderRight = artwork.style.borderRight.replace(/[^ ]+$/, artworkBorderColor);
+    if (artwork.style.borderBottom) artwork.style.borderBottom = artwork.style.borderBottom.replace(/[^ ]+$/, artworkBorderColor);
+  });
+}
+
+// Example usage to change colors dynamically
+// wallColor = 'blue';
+// artworkBorderColor = 'green';
+// updateWallStyles();
+// updateArtworkStyles();
