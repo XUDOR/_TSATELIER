@@ -295,9 +295,9 @@ userArrow.style.position = 'absolute';
 userArrow.style.top = '50%';
 userArrow.style.left = '50%';
 userArrow.style.transform = 'translate(-50%, -50%) rotate(0deg)';
-userArrow.style.width = '15px';
-userArrow.style.height = '15px';
-userArrow.style.backgroundColor = '#efefe6'; // ++++++++++++++++++++++++++++++++++ARROW COLOUR
+userArrow.style.width = '12px';
+userArrow.style.height = '12px';
+userArrow.style.backgroundColor = '#7A7968'; // ++++++++++++++++++++++++++++++++++ARROW COLOUR
 userArrow.style.clipPath = 'polygon(50% 0%, 0% 100%, 100% 100%)';
 userMarker.appendChild(userArrow);
 
