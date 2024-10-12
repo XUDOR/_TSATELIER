@@ -42,7 +42,7 @@ header {
 
 /* Left column: Gallery Viewer Container */
 #gallery-container {
-  width: 75%;
+  width: 85%;
   background-color: #2D2C2A;
   position: relative;
   overflow: hidden;
@@ -66,7 +66,7 @@ header {
 
 /* Right column: Sidebar */
 #sidebar {
-  width: 25%;
+  width: 15%;
   background-color: black;
   display: flex;
   flex-direction: column;
@@ -83,18 +83,18 @@ header {
 
 #map {
   display: grid;
-  grid-template-columns: repeat(11, 30px);
-  grid-template-rows: repeat(11, 30px);
+  grid-template-columns: repeat(11, 22px);
+  grid-template-rows: repeat(11, 22px);
   
   background-color: black;
-  border: 1px solid white;
+  border:2px solid #87857B;
 }
 
 /* Map Cells */
 .map-cell {
   box-sizing: border-box;
-  width: 30px;
-  height: 30px;
+  width: 22px;
+  height: 22px;
   position: relative;
   padding: 2px; /* Reintroduce 2px padding here to offset artwork */
   background-color: black;
