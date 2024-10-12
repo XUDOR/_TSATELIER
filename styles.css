@@ -42,8 +42,8 @@ header {
 
 /* Left column: Gallery Viewer Container */
 #gallery-container {
-  width: 66.66%;
-  background-color: white;
+  width: 75%;
+  background-color: #2D2C2A;
   position: relative;
   overflow: hidden;
   perspective: 1000px;
@@ -55,7 +55,7 @@ header {
 
 .GalleryTag {
   font-size: .9em;
-  font-weight: lighter;
+  font-weight: lighter; 
   text-align: left;
   justify-content: left;
   align-self: flex-start;
@@ -66,7 +66,7 @@ header {
 
 /* Right column: Sidebar */
 #sidebar {
-  width: 33.33%;
+  width: 25%;
   background-color: black;
   display: flex;
   flex-direction: column;
@@ -143,19 +143,23 @@ header {
 /* Information Container */
 #info-container {
   padding: 20px;
-  background-color: #f9f9f9;
+  background-color: #211F1D;
   flex-shrink: 0; /* Prevent shrinking */
 }
 
 .InfoTag{
   font-size: .9em;
   font-weight: lighter;
+  color: #efefe6;
+  margin: 3px;
 
 }
 
 #information {
+  padding: 2px;
+  border: 1px solid #FFFADF;
   font-size: .7em;
-  color: #333;
+  color: #efefe6;
 }
 
 /* Footer styles */
