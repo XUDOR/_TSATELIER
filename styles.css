@@ -67,7 +67,7 @@ header {
 /* Right column: Sidebar */
 #sidebar {
   width: 33.33%;
-  background-color: #e1e1e1;
+  background-color: black;
   display: flex;
   flex-direction: column;
   overflow: auto; /* Enable scrolling if content overflows */
@@ -86,8 +86,8 @@ header {
   grid-template-columns: repeat(11, 30px);
   grid-template-rows: repeat(11, 30px);
   
-  background-color: white;
-  border: 1px solid black;
+  background-color: black;
+  border: 1px solid white;
 }
 
 /* Map Cells */
@@ -97,7 +97,7 @@ header {
   height: 30px;
   position: relative;
   padding: 2px; /* Reintroduce 2px padding here to offset artwork */
-  background-color: white;
+  background-color: black;
 }
 
 /* Artwork Elements */
@@ -126,7 +126,7 @@ header {
   transform: translate(-50%, -50%) rotate(0deg);
   width: 15px;
   height: 15px;
-  background-color: #179FAD;
+  background-color: #efefe6;
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   z-index: 11;
 }
