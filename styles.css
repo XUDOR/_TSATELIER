@@ -1,30 +1,65 @@
-/* styles.css */
+/* styles.css - Refactored with Collapsible Map & Nav Controls */
+
+/* ---------------------- VARIABLES ---------------------- */
+:root {
+  --base-font-size: 16px;
+  --color-bg-body: #f0f0f0;
+  --color-bg-header-footer: #333;
+  --color-text-header-footer: white;
+  --color-bg-gallery: #2D2C2A;
+  --color-bg-sidebar: black;
+  --color-map-border: #87857B;
+  --color-map-cell-bg: black;
+  --color-map-cell-number: deepskyblue;
+  --color-user-arrow: #efefe6;
+  --color-bg-info: #211F1D;
+  --color-text-info: #efefe6;
+  --color-border-info: #FFFADF;
+  --color-tag-text: #efefe6;
+  --color-nav-button-bg: #444;
+  --color-nav-button-text: white;
+  --color-nav-button-hover-bg: #666;
+}
 
 /* ---------------------- RESET & BASE ---------------------- */
-* {
+*,
+*::before,
+*::after {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
+html {
+  font-size: var(--base-font-size);
+  width: 100%;
+}
+
 body {
   font-family: Arial, sans-serif;
-  background-color: #f0f0f0;
+  background-color: var(--color-bg-body);
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden;
+  position: relative;
+  font-size: 1rem;
+  line-height: 1.5;
 }
 
 /* ---------------------- HEADER ---------------------- */
 header {
-  background-color: #333;
-  color: white;
-  padding: 10px;
+  background-color: var(--color-bg-header-footer);
+  color: var(--color-text-header-footer);
+  padding: 0.625rem;
   text-align: left;
+  width: 100%;
+  flex-shrink: 0;
 }
 
 .TitleTag {
-  font-size: 0.9em;
+  font-size: 1.125rem;
   font-weight: lighter;
 }
 
@@ -32,61 +67,86 @@ header {
 #main-content {
   flex: 1;
   display: flex;
-  overflow: hidden;
+  width: 100%;
 }
 
 /* ---------------------- GALLERY CONTAINER (LEFT) ---------------------- */
 #gallery-container {
   width: 85%;
-  background-color: #2D2C2A;
+  background-color: var(--color-bg-gallery);
   position: relative;
-  overflow: hidden;
   perspective: 1000px;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: flex-start;
-}
-
-.GalleryTag {
-  font-size: 0.9em;
-  font-weight: lighter;
-  display: flex;
-  align-self: flex-start;
-  justify-content: left;
-  width: 100%;
-  margin: 5px;
+  overflow: hidden;
 }
 
 /* ---------------------- SIDEBAR (RIGHT) ---------------------- */
 #sidebar {
   width: 15%;
-  background-color: black;
+  background-color: var(--color-bg-sidebar);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Children will handle scrolling */
+}
+
+/* Map + Info containers */
+#map-container,
+#info-container {
+  padding: 1.25rem;
   display: flex;
   flex-direction: column;
   overflow: auto;
+  flex-shrink: 0;
+  max-width: 100%;
+}
+
+#map-container {
+  border-bottom: 1px solid #444;
+  align-items: center; /* Center map grid */
+}
+
+.sidebar-header {
+    display: flex;
+    justify-content: space-between; /* Push tag left, button right */
+    align-items: center;
+    width: 100%;
+    margin-bottom: 0.5rem; /* Space below header */
+}
+
+.GalleryTag, .InfoTag {
+  font-size: 0.9rem;
+  font-weight: lighter;
+  color: var(--color-tag-text);
+  /* Removed width: 100% and margin - handled by parent flex */
+}
+
+#info-container {
+  background-color: var(--color-bg-info);
+  word-wrap: break-word;
+  flex-grow: 1; /* Allow info to take space */
+   align-items: stretch;
 }
 
 /* ---------------------- MAP ---------------------- */
-#map-container {
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
 #map {
-  display: grid;
+  display: grid; /* Display is toggled via JS/CSS class */
   grid-template-columns: repeat(11, 22px);
   grid-template-rows: repeat(11, 22px);
-  background-color: black;
-  border: 2px solid #87857B;
+  background-color: var(--color-map-cell-bg);
+  border: 2px solid var(--color-map-border);
+  /* margin-top: 0.5rem; - Replaced by header margin */
+  transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out; /* Smooth collapse */
+  opacity: 1;
+  max-height: 500px; /* Allow space for map */
 }
 
 .map-cell {
   width: 22px;
   height: 22px;
-  padding: 2px;
-  background-color: black;
+  background-color: var(--color-map-cell-bg);
   position: relative;
 }
 
@@ -95,7 +155,10 @@ header {
   width: 100%;
   height: 100%;
   background-color: transparent;
-  box-sizing: border-box;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 5; /* Ensure artwork is above cell bg/walls */
 }
 
 /* Cell Numbering */
@@ -104,14 +167,17 @@ header {
   top: 2px;
   left: 2px;
   font-size: 10px;
-  color: deepskyblue;
+  color: var(--color-map-cell-number);
+  display: none;
 }
 
-/* ---------------------- USER ---------------------- */
+/* ---------------------- USER MARKER ---------------------- */
 #user-marker {
   width: 100%;
   height: 100%;
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 10;
 }
 
@@ -120,204 +186,264 @@ header {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
-  width: 15px;
-  height: 15px;
-  background-color: #efefe6;
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-user-arrow);
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
   z-index: 11;
 }
 
 /* ---------------------- INFORMATION ---------------------- */
-#info-container {
-  padding: 20px;
-  background-color: #211F1D;
-  flex-shrink: 0;
-}
-
-.InfoTag {
-  font-size: 0.9em;
-  font-weight: lighter;
-  color: #efefe6;
-  margin: 3px;
-}
-
 #information {
-  padding: 2px;
-  border: 1px solid #FFFADF;
-  font-size: 0.7em;
-  color: #efefe6;
+  padding: 0.5rem;
+  border: 1px solid var(--color-border-info);
+  font-size: 0.875rem;
+  color: var(--color-text-info);
+  width: 100%;
+  max-width: 100%;
+  word-break: break-word;
+  overflow-wrap: break-word;
+  line-height: 1.4;
+  min-height: 5rem;
+  flex-grow: 1; /* Allow info text area to grow */
+  background-color: var(--color-bg-info); /* Ensure bg color */
+  overflow-y: auto; /* Scroll if needed */
 }
 
 /* ---------------------- FOOTER ---------------------- */
 footer {
-  background-color: #333;
-  color: white;
-  padding: 10px;
+  background-color: var(--color-bg-header-footer);
+  color: var(--color-text-header-footer);
+  padding: 0.625rem;
   text-align: center;
-  position: sticky;
-  bottom: 0;
   width: 100%;
   z-index: 1000;
+  flex-shrink: 0;
 }
 
 .FooterTag {
-  font-size: 0.6em;
+  font-size: 0.75rem;
   font-weight: lighter;
   text-align: right;
 }
 
-/* Map + Info containers */
-#map-container, #info-container {
-  flex: 1;
-  overflow: auto;
+/* ---------------------- MOBILE ONLY ELEMENTS ---------------------- */
+/* Hide mobile elements by default */
+.mobile-only {
+  display: none;
 }
+
+/* Map Toggle Button */
+#map-toggle-button {
+  background: none;
+  border: 1px solid var(--color-tag-text);
+  color: var(--color-tag-text);
+  padding: 2px 5px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  border-radius: 4px;
+}
+#map-toggle-button .toggle-icon {
+    display: inline-block;
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Collapsed State for Map */
+#map-container.map-collapsed #map {
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    border-width: 0; /* Hide border when collapsed */
+    margin-top: 0;
+}
+#map-container.map-collapsed .toggle-icon {
+    transform: rotate(-90deg); /* Point right when collapsed */
+}
+#map-container.map-collapsed {
+    /* Optional: Reduce padding/margins when collapsed */
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+}
+
+
+/* On-Screen Navigation Controls */
+#nav-controls {
+    display: none; /* Hidden by default, shown in mobile media query */
+    flex-direction: row;
+    justify-content: space-around; /* Space out buttons */
+    align-items: center;
+    padding: 0.75rem 0.5rem; /* Add padding */
+    background-color: var(--color-bg-info); /* Match info background */
+    border-top: 1px solid #444; /* Separator */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+.nav-up-down {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-button {
+    background-color: var(--color-nav-button-bg);
+    color: var(--color-nav-button-text);
+    border: 1px solid var(--color-nav-button-text);
+    border-radius: 5px;
+    font-size: 1.2rem; /* Larger tap targets */
+    width: 45px; /* Fixed size */
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    margin: 3px; /* Small gap */
+    transition: background-color 0.2s ease;
+}
+
+.nav-button:hover, .nav-button:active {
+    background-color: var(--color-nav-button-hover-bg);
+}
+
+.nav-up-down .nav-button {
+    width: 40px;
+    height: 35px; /* Slightly shorter up/down */
+    font-size: 1rem;
+}
+
 
 /* ---------------------- TRANSITIONS ---------------------- */
 #gallery-container,
 #sidebar,
 #map,
 .map-cell,
-#user-arrow {
+#user-arrow,
+header,
+footer {
   transition: all 0.25s ease-in-out;
 }
 
 /* ---------------------- MEDIA QUERIES ---------------------- */
 
-/* TIGHT LAYOUT (901px–1100px) */
-@media (max-width: 1100px) and (min-width: 901px) {
+/* == MEDIUM SCREENS / LANDSCAPE TABLETS (~992px - 1200px) == */
+@media (max-width: 1200px) {
   #gallery-container { width: 80%; }
   #sidebar { width: 20%; }
-
-  #map {
-    grid-template-columns: repeat(11, 18px);
-    grid-template-rows: repeat(11, 18px);
-  }
-
-  .map-cell {
-    width: 18px;
-    height: 18px;
-  }
-
-  .GalleryTag, .InfoTag, .FooterTag {
-    font-size: 0.8em;
-  }
-
-  #information { font-size: 0.65em; }
-  #user-arrow { width: 12px; height: 12px; }
+  #map { grid-template-columns: repeat(11, 20px); grid-template-rows: repeat(11, 20px); }
+  .map-cell { width: 20px; height: 20px; }
+  #user-arrow { width: 11px; height: 11px; }
+  .TitleTag { font-size: 1.0rem; }
+  .GalleryTag, .InfoTag { font-size: 0.85rem; }
+  #information { font-size: 0.8rem; }
+  .FooterTag { font-size: 0.7rem; }
 }
 
-/* TABLET (<=1024px) */
-@media (max-width: 1024px) {
-  #gallery-container { width: 75%; }
-  #sidebar { width: 25%; }
-
-  #map {
-    grid-template-columns: repeat(11, 16px);
-    grid-template-rows: repeat(11, 16px);
-  }
-
-  .map-cell {
-    width: 16px;
-    height: 16px;
-  }
-
-  #user-arrow { width: 10px; height: 10px; }
-  .GalleryTag, .InfoTag, .FooterTag { font-size: 0.75em; }
-  #information { font-size: 0.65em; }
-  
-  /* Tablet header/footer improvements */
-  header {
-    padding: 12px;
-  }
-  
-  .TitleTag {
-    font-size: 1em;
-    font-weight: normal;
-  }
-  
-  footer {
-    padding: 12px;
-  }
-  
-  .FooterTag {
-    font-size: 0.7em;
-  }
-}
-
-/* MOBILE (<=600px) */
-@media (max-width: 600px) {
-  /* Layout adjustments */
+/* == TABLET (~768px - 991px) == */
+@media (max-width: 991px) {
   #gallery-container { width: 70%; }
+  #sidebar { width: 30%; }
+  #map { grid-template-columns: repeat(11, 18px); grid-template-rows: repeat(11, 18px); }
+  .map-cell { width: 18px; height: 18px; }
+  #user-arrow { width: 10px; height: 10px; }
+  .TitleTag { font-size: 1.0rem; font-weight: normal; }
+  .GalleryTag, .InfoTag { font-size: 0.8rem; }
+  #information { font-size: 0.75rem; }
+  .FooterTag { font-size: 0.65rem; }
+  header, footer { padding: 0.75rem; }
+}
+
+/* == MOBILE (<= 767px) == */
+@media (max-width: 767px) {
+  #main-content {
+    flex-direction: column;
+    height: auto;
+  }
+  #gallery-container {
+    width: 100%;
+    height: 50vh; /* Adjusted height */
+    order: 1;
+  }
   #sidebar {
-    width: 30%;
-    overflow-y: auto;
-    max-height: 100vh;
+    width: 100%;
+    order: 2;
+    height: auto; /* Let content dictate height */
+    min-height: 45vh; /* Ensure minimum height */
+    flex-direction: column;
+    overflow: hidden; /* Still hide overflow */
+  }
+
+  /* Show mobile elements */
+  .mobile-only {
+    display: flex; /* Use flex for nav controls */
+  }
+  #map-toggle-button {
+     display: inline-block; /* Show toggle button */
+  }
+  #nav-controls {
+      display: flex; /* Override none for nav controls */
+  }
+
+
+  #map-container, #info-container {
+    width: 100%;
+    padding: 0.8rem; /* Consistent padding */
+    overflow-y: auto; /* Allow scrolling if needed */
+    flex-shrink: 1; /* Allow shrinking if needed */
+  }
+  #map-container {
+    flex-basis: auto; /* Let content size determine initial basis */
+    flex-shrink: 0; /* Prevent map container shrinking initially */
+  }
+  #info-container {
+     flex-basis: 150px; /* Give info a base size */
+     flex-grow: 1; /* Allow info to grow */
+     padding-top: 0.5rem;
   }
 
   #map {
-    grid-template-columns: repeat(11, 14px);
-    grid-template-rows: repeat(11, 14px);
+    grid-template-columns: repeat(11, 18px); /* Larger map cells on mobile */
+    grid-template-rows: repeat(11, 18px);
+    margin-top: 0; /* No extra top margin needed */
   }
+  .map-cell { width: 18px; height: 18px; }
+  #user-arrow { width: 12px; height: 12px; }
 
-  .map-cell {
-    width: 14px;
-    height: 14px;
-  }
+  .TitleTag { font-size: 1.0rem; letter-spacing: 0.5px; }
+  .GalleryTag, .InfoTag { font-size: 0.8rem; }
+  #information { font-size: 0.75rem; line-height: 1.3; min-height: 60px; }
+  .FooterTag { font-size: 0.7rem; letter-spacing: 0.5px; }
 
-  .GalleryTag, .InfoTag {
-    font-size: 0.7em;
-  }
-
-  #information { font-size: 0.6em; }
-
-  /* Enhanced header for mobile */
-  header {
-    padding: 15px 10px;
+  header, footer {
+    padding: 0.7rem 0.625rem;
+    min-height: 42px;
     display: flex;
     align-items: center;
-    min-height: 50px; /* Ensure minimum clickable height */
   }
-  
-  .TitleTag {
-    font-size: 1.2em;
-    font-weight: normal;
-    letter-spacing: 0.5px;
-  }
-
-  /* Enhanced footer for mobile */
-  footer {
-    padding: 15px 10px;
-    min-height: 45px; /* Ensure minimum clickable height */
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-  }
-  
-  .FooterTag {
-    font-size: 0.85em;
-    font-weight: normal;
-    letter-spacing: 0.5px;
-  }
+  footer { justify-content: flex-end; }
 }
 
-/* SMALL MOBILE (<=400px) */
-@media (max-width: 400px) {
-  /* Further enhance header/footer for very small screens */
-  header {
-    padding: 16px 10px;
-    min-height: 55px;
+/* == SMALL MOBILE (<= 480px) == */
+@media (max-width: 480px) {
+   #gallery-container { height: 45vh; } /* Adjust vh split */
+   #sidebar { min-height: 50vh; }
+   #map {
+    grid-template-columns: repeat(11, 15px); /* Adjust cell size */
+    grid-template-rows: repeat(11, 15px);
+   }
+  .map-cell { width: 15px; height: 15px; }
+  #user-arrow { width: 10px; height: 10px; }
+
+  .TitleTag { font-size: 0.9rem; }
+  .GalleryTag, .InfoTag { font-size: 0.75rem; }
+  #information { font-size: 0.7rem; line-height: 1.3; }
+  .FooterTag { font-size: 0.65rem; }
+
+  header, footer {
+    padding: 0.6rem 0.5rem;
+    min-height: 40px;
   }
-  
-  .TitleTag {
-    font-size: 1.3em;
-  }
-  
-  footer {
-    padding: 16px 10px;
-    min-height: 50px;
-  }
-  
-  .FooterTag {
-    font-size: 0.9em;
-  }
+   #map-container, #info-container {
+     padding: 0.6rem;
+   }
+   /* Smaller nav buttons on very small screens */
+   .nav-button { width: 40px; height: 40px; font-size: 1rem; }
+   .nav-up-down .nav-button { width: 35px; height: 30px; font-size: 0.9rem; }
 }

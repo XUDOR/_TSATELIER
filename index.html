@@ -2,38 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Interactive Gallery Space</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <!-- Header -->
     <header>
         <h1 class="TitleTag">TSAtelier</h1>
     </header>
 
-    <!-- Main content area -->
     <div id="main-content">
-        <!-- Left column: Gallery Viewer Container -->
         <div id="gallery-container">
-            <!-- Gallery viewer content -->
-        </div>
+            </div>
 
-        <!-- Right column: Sidebar -->
         <div id="sidebar">
-            <!-- Map Container -->
             <div id="map-container">
-                <h3 class="GalleryTag">Gallery Map</h3>
+                <div class="sidebar-header">
+                     <h3 class="GalleryTag">Gallery Map</h3>
+                     <button id="map-toggle-button" class="mobile-only map-toggle">
+                         <span class="toggle-icon">▼</span> </button>
+                </div>
                 <div id="map"></div>
             </div>
-            <!-- Information Container -->
+
             <div id="info-container">
                 <h3 class="InfoTag">Information</h3>
                 <div id="information"></div>
             </div>
+
+            <div id="nav-controls" class="mobile-only">
+                <button id="btn-left" class="nav-button">◀</button>
+                <div class="nav-up-down">
+                     <button id="btn-up" class="nav-button">▲</button>
+                     <button id="btn-down" class="nav-button">▼</button>
+                </div>
+                <button id="btn-right" class="nav-button">▶</button>
+            </div>
         </div>
     </div>
 
-    <!-- Footer -->
     <footer>
         <p class="FooterTag">_RDEXENV&copy; 2024</p>
     </footer>
