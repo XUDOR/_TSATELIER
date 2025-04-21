@@ -1,4 +1,4 @@
-/* styles.css - Refactored with Collapsible Map & Nav Controls */
+/* styles.css - Nav Controls Always Visible, Sidebar Scroll */
 
 /* ---------------------- VARIABLES ---------------------- */
 :root {
@@ -52,14 +52,14 @@ body {
 header {
   background-color: var(--color-bg-header-footer);
   color: var(--color-text-header-footer);
-  padding: 0.625rem;
+  padding: 0.625rem; /* 10px */
   text-align: left;
   width: 100%;
   flex-shrink: 0;
 }
 
 .TitleTag {
-  font-size: 1.125rem;
+  font-size: 1.125rem; /* ~18px */
   font-weight: lighter;
 }
 
@@ -68,6 +68,7 @@ header {
   flex: 1;
   display: flex;
   width: 100%;
+  overflow: hidden; /* Prevent main content itself from overflowing */
 }
 
 /* ---------------------- GALLERY CONTAINER (LEFT) ---------------------- */
@@ -89,17 +90,18 @@ header {
   background-color: var(--color-bg-sidebar);
   display: flex;
   flex-direction: column;
-  overflow: hidden; /* Children will handle scrolling */
+  overflow-x: hidden; /* Prevent horizontal overflow within sidebar */
+  overflow-y: auto;   /* Allow vertical scroll if content (map+info+nav) exceeds height */
 }
 
 /* Map + Info containers */
 #map-container,
 #info-container {
-  padding: 1.25rem;
+  padding: 1.25rem; /* 20px */
   display: flex;
   flex-direction: column;
-  overflow: auto;
-  flex-shrink: 0;
+  /* overflow: auto; */ /* Let parent sidebar handle scrolling */
+  flex-shrink: 0; /* Prevent shrinking unless necessary */
   max-width: 100%;
 }
 
@@ -110,37 +112,35 @@ header {
 
 .sidebar-header {
     display: flex;
-    justify-content: space-between; /* Push tag left, button right */
+    justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 0.5rem; /* Space below header */
+    margin-bottom: 0.5rem;
 }
 
 .GalleryTag, .InfoTag {
   font-size: 0.9rem;
   font-weight: lighter;
   color: var(--color-tag-text);
-  /* Removed width: 100% and margin - handled by parent flex */
 }
 
 #info-container {
   background-color: var(--color-bg-info);
   word-wrap: break-word;
-  flex-grow: 1; /* Allow info to take space */
-   align-items: stretch;
+  flex-grow: 1; /* Allow info to take available space */
+  align-items: stretch; /* Ensure children stretch */
 }
 
 /* ---------------------- MAP ---------------------- */
 #map {
-  display: grid; /* Display is toggled via JS/CSS class */
+  display: grid;
   grid-template-columns: repeat(11, 22px);
   grid-template-rows: repeat(11, 22px);
   background-color: var(--color-map-cell-bg);
   border: 2px solid var(--color-map-border);
-  /* margin-top: 0.5rem; - Replaced by header margin */
-  transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out; /* Smooth collapse */
+  transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out;
   opacity: 1;
-  max-height: 500px; /* Allow space for map */
+  max-height: 500px; /* Arbitrary large height for transition */
 }
 
 .map-cell {
@@ -158,7 +158,7 @@ header {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 5; /* Ensure artwork is above cell bg/walls */
+  z-index: 5;
 }
 
 /* Cell Numbering */
@@ -168,21 +168,21 @@ header {
   left: 2px;
   font-size: 10px;
   color: var(--color-map-cell-number);
-  display: none;
+  display: none; /* Hidden by default */
 }
 
 /* ---------------------- USER MARKER ---------------------- */
+/* No specific styles needed for #user-marker itself, it's positioned by grid */
 #user-marker {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 10;
+    /* Ensure it occupies the grid cell correctly */
+    width: 100%;
+    height: 100%;
+    /* z-index is managed by grid context or default flow */
 }
 
+
 #user-arrow {
-  position: absolute;
+  position: absolute; /* Positioned within user-marker */
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%) rotate(0deg);
@@ -190,7 +190,7 @@ header {
   height: 12px;
   background-color: var(--color-user-arrow);
   clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  z-index: 11;
+  z-index: 11; /* Above marker content */
 }
 
 /* ---------------------- INFORMATION ---------------------- */
@@ -205,9 +205,9 @@ header {
   overflow-wrap: break-word;
   line-height: 1.4;
   min-height: 5rem;
-  flex-grow: 1; /* Allow info text area to grow */
-  background-color: var(--color-bg-info); /* Ensure bg color */
-  overflow-y: auto; /* Scroll if needed */
+  flex-grow: 1;
+  background-color: var(--color-bg-info);
+  overflow-y: auto; /* Allow scrolling within info box if needed */
 }
 
 /* ---------------------- FOOTER ---------------------- */
@@ -227,13 +227,13 @@ footer {
   text-align: right;
 }
 
-/* ---------------------- MOBILE ONLY ELEMENTS ---------------------- */
-/* Hide mobile elements by default */
+/* ---------------------- MOBILE ONLY ELEMENTS (Toggle Button) ---------------------- */
+/* Hide elements with this class by default */
 .mobile-only {
   display: none;
 }
 
-/* Map Toggle Button */
+/* Map Toggle Button Specific Styles */
 #map-toggle-button {
   background: none;
   border: 1px solid var(--color-tag-text);
@@ -248,33 +248,32 @@ footer {
     transition: transform 0.3s ease-in-out;
 }
 
-/* Collapsed State for Map */
+/* Collapsed State for Map (Triggered by JS adding class) */
 #map-container.map-collapsed #map {
     opacity: 0;
     max-height: 0;
     overflow: hidden;
-    border-width: 0; /* Hide border when collapsed */
+    border-width: 0;
     margin-top: 0;
 }
 #map-container.map-collapsed .toggle-icon {
-    transform: rotate(-90deg); /* Point right when collapsed */
+    transform: rotate(-90deg);
 }
 #map-container.map-collapsed {
-    /* Optional: Reduce padding/margins when collapsed */
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 }
 
 
-/* On-Screen Navigation Controls */
+/* ---------------------- NAVIGATION CONTROLS (Always Visible) ---------------------- */
 #nav-controls {
-    display: none; /* Hidden by default, shown in mobile media query */
+    display: flex; /* Always visible */
     flex-direction: row;
-    justify-content: space-around; /* Space out buttons */
+    justify-content: space-around;
     align-items: center;
-    padding: 0.75rem 0.5rem; /* Add padding */
+    padding: 0.75rem 0.5rem;
     background-color: var(--color-bg-info); /* Match info background */
-    border-top: 1px solid #444; /* Separator */
+    border-top: 1px solid #444;
     flex-shrink: 0; /* Prevent shrinking */
 }
 
@@ -288,14 +287,14 @@ footer {
     color: var(--color-nav-button-text);
     border: 1px solid var(--color-nav-button-text);
     border-radius: 5px;
-    font-size: 1.2rem; /* Larger tap targets */
-    width: 45px; /* Fixed size */
+    font-size: 1.2rem;
+    width: 45px;
     height: 45px;
     display: flex;
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    margin: 3px; /* Small gap */
+    margin: 3px;
     transition: background-color 0.2s ease;
 }
 
@@ -305,7 +304,7 @@ footer {
 
 .nav-up-down .nav-button {
     width: 40px;
-    height: 35px; /* Slightly shorter up/down */
+    height: 35px;
     font-size: 1rem;
 }
 
@@ -334,6 +333,9 @@ footer {
   .GalleryTag, .InfoTag { font-size: 0.85rem; }
   #information { font-size: 0.8rem; }
   .FooterTag { font-size: 0.7rem; }
+  /* Adjust nav button size for medium screens */
+  .nav-button { width: 40px; height: 40px; font-size: 1.1rem;}
+  .nav-up-down .nav-button { width: 35px; height: 32px; font-size: 0.9rem; }
 }
 
 /* == TABLET (~768px - 991px) == */
@@ -348,102 +350,73 @@ footer {
   #information { font-size: 0.75rem; }
   .FooterTag { font-size: 0.65rem; }
   header, footer { padding: 0.75rem; }
+  /* Hide map toggle button on tablet */
+  #map-toggle-button { display: none; }
 }
 
 /* == MOBILE (<= 767px) == */
 @media (max-width: 767px) {
-  #main-content {
-    flex-direction: column;
-    height: auto;
-  }
-  #gallery-container {
-    width: 100%;
-    height: 50vh; /* Adjusted height */
-    order: 1;
-  }
+  #main-content { flex-direction: column; height: auto; overflow: hidden; } /* Hide overflow here? */
+  #gallery-container { width: 100%; height: 50vh; order: 1; }
   #sidebar {
-    width: 100%;
-    order: 2;
-    height: auto; /* Let content dictate height */
-    min-height: 45vh; /* Ensure minimum height */
-    flex-direction: column;
-    overflow: hidden; /* Still hide overflow */
+      width: 100%;
+      order: 2;
+      height: auto; /* Let content determine height */
+      min-height: 45vh;
+      flex-direction: column;
+      overflow-y: auto; /* Ensure sidebar scrolls if content + nav exceeds viewport */
   }
 
-  /* Show mobile elements */
+  /* Show mobile-only elements (like the toggle button) */
   .mobile-only {
-    display: flex; /* Use flex for nav controls */
+      display: inline-block;
   }
-  #map-toggle-button {
-     display: inline-block; /* Show toggle button */
-  }
-  #nav-controls {
-      display: flex; /* Override none for nav controls */
-  }
-
+  /* Nav controls are already visible, no rule needed here */
 
   #map-container, #info-container {
-    width: 100%;
-    padding: 0.8rem; /* Consistent padding */
-    overflow-y: auto; /* Allow scrolling if needed */
-    flex-shrink: 1; /* Allow shrinking if needed */
+      width: 100%;
+      padding: 0.8rem;
+      overflow-y: hidden; /* Let parent sidebar scroll */
+      flex-shrink: 1;
   }
-  #map-container {
-    flex-basis: auto; /* Let content size determine initial basis */
-    flex-shrink: 0; /* Prevent map container shrinking initially */
-  }
-  #info-container {
-     flex-basis: 150px; /* Give info a base size */
-     flex-grow: 1; /* Allow info to grow */
-     padding-top: 0.5rem;
-  }
+  #map-container { flex-basis: auto; flex-shrink: 0; }
+  #info-container { flex-basis: 100px; flex-grow: 1; padding-top: 0.5rem; min-height: 50px; }
 
-  #map {
-    grid-template-columns: repeat(11, 18px); /* Larger map cells on mobile */
-    grid-template-rows: repeat(11, 18px);
-    margin-top: 0; /* No extra top margin needed */
-  }
+  #map { grid-template-columns: repeat(11, 18px); grid-template-rows: repeat(11, 18px); }
   .map-cell { width: 18px; height: 18px; }
   #user-arrow { width: 12px; height: 12px; }
 
   .TitleTag { font-size: 1.0rem; letter-spacing: 0.5px; }
   .GalleryTag, .InfoTag { font-size: 0.8rem; }
-  #information { font-size: 0.75rem; line-height: 1.3; min-height: 60px; }
+  #information { font-size: 0.75rem; line-height: 1.3; min-height: 40px; }
   .FooterTag { font-size: 0.7rem; letter-spacing: 0.5px; }
 
-  header, footer {
-    padding: 0.7rem 0.625rem;
-    min-height: 42px;
-    display: flex;
-    align-items: center;
-  }
+  header, footer { padding: 0.7rem 0.625rem; min-height: 42px; }
   footer { justify-content: flex-end; }
+
+  /* Nav button size for standard mobile */
+  .nav-button { width: 45px; height: 45px; font-size: 1.2rem; }
+  .nav-up-down .nav-button { width: 40px; height: 35px; font-size: 1rem; }
 }
 
 /* == SMALL MOBILE (<= 480px) == */
 @media (max-width: 480px) {
-   #gallery-container { height: 45vh; } /* Adjust vh split */
+   #gallery-container { height: 45vh; }
    #sidebar { min-height: 50vh; }
-   #map {
-    grid-template-columns: repeat(11, 15px); /* Adjust cell size */
-    grid-template-rows: repeat(11, 15px);
-   }
+   #map { grid-template-columns: repeat(11, 15px); grid-template-rows: repeat(11, 15px); }
   .map-cell { width: 15px; height: 15px; }
   #user-arrow { width: 10px; height: 10px; }
 
   .TitleTag { font-size: 0.9rem; }
   .GalleryTag, .InfoTag { font-size: 0.75rem; }
-  #information { font-size: 0.7rem; line-height: 1.3; }
+  #information { font-size: 0.7rem; line-height: 1.3; min-height: 30px;}
   .FooterTag { font-size: 0.65rem; }
 
-  header, footer {
-    padding: 0.6rem 0.5rem;
-    min-height: 40px;
-  }
-   #map-container, #info-container {
-     padding: 0.6rem;
-   }
-   /* Smaller nav buttons on very small screens */
-   .nav-button { width: 40px; height: 40px; font-size: 1rem; }
-   .nav-up-down .nav-button { width: 35px; height: 30px; font-size: 0.9rem; }
+  header, footer { padding: 0.6rem 0.5rem; min-height: 40px; }
+  #map-container, #info-container { padding: 0.6rem; }
+
+  /* Smaller nav buttons on very small screens */
+  .nav-button { width: 40px; height: 40px; font-size: 1rem; }
+  .nav-up-down .nav-button { width: 35px; height: 30px; font-size: 0.9rem; }
 }
+
