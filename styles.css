@@ -1,23 +1,21 @@
 /* styles.css */
 
-/* Reset margins and paddings */
+/* ---------------------- RESET & BASE ---------------------- */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Body styles */
 body {
   font-family: Arial, sans-serif;
-  
   background-color: #f0f0f0;
   display: flex;
   flex-direction: column;
   min-height: 100vh;
 }
 
-/* Header styles */
+/* ---------------------- HEADER ---------------------- */
 header {
   background-color: #333;
   color: white;
@@ -25,55 +23,50 @@ header {
   text-align: left;
 }
 
-.TitleTag{
-  font-size: .9em;
+.TitleTag {
+  font-size: 0.9em;
   font-weight: lighter;
 }
 
-
-
-
-/* Main content area */
+/* ---------------------- MAIN CONTENT ---------------------- */
 #main-content {
   flex: 1;
   display: flex;
-  overflow: hidden; /* Prevent overflow */
+  overflow: hidden;
 }
 
-/* Left column: Gallery Viewer Container */
+/* ---------------------- GALLERY CONTAINER (LEFT) ---------------------- */
 #gallery-container {
   width: 85%;
   background-color: #2D2C2A;
   position: relative;
   overflow: hidden;
   perspective: 1000px;
-  /* Additional styles for gallery viewer */
   display: flex;
   justify-content: center;
   align-items: flex-start;
 }
 
 .GalleryTag {
-  font-size: .9em;
-  font-weight: lighter; 
-  text-align: left;
-  justify-content: left;
+  font-size: 0.9em;
+  font-weight: lighter;
+  display: flex;
   align-self: flex-start;
+  justify-content: left;
   width: 100%;
   margin: 5px;
-  display: flex;
 }
 
-/* Right column: Sidebar */
+/* ---------------------- SIDEBAR (RIGHT) ---------------------- */
 #sidebar {
   width: 15%;
   background-color: black;
   display: flex;
   flex-direction: column;
-  overflow: auto; /* Enable scrolling if content overflows */
+  overflow: auto;
 }
 
-/* Map Container */
+/* ---------------------- MAP ---------------------- */
 #map-container {
   padding: 20px;
   display: flex;
@@ -85,32 +78,36 @@ header {
   display: grid;
   grid-template-columns: repeat(11, 22px);
   grid-template-rows: repeat(11, 22px);
-  
   background-color: black;
-  border:2px solid #87857B;
+  border: 2px solid #87857B;
 }
 
-/* Map Cells */
 .map-cell {
-  box-sizing: border-box;
   width: 22px;
   height: 22px;
-  position: relative;
-  padding: 2px; /* Reintroduce 2px padding here to offset artwork */
+  padding: 2px;
   background-color: black;
+  position: relative;
 }
 
-/* Artwork Elements */
+/* Artwork */
 .artwork {
-  width: 100%; /* Let the artwork fill the remaining space after padding */
+  width: 100%;
   height: 100%;
   background-color: transparent;
   box-sizing: border-box;
 }
 
+/* Cell Numbering */
+.map-cell div {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  font-size: 10px;
+  color: deepskyblue;
+}
 
-
-/* User Marker */
+/* ---------------------- USER ---------------------- */
 #user-marker {
   width: 100%;
   height: 100%;
@@ -118,7 +115,6 @@ header {
   z-index: 10;
 }
 
-/* User Arrow */
 #user-arrow {
   position: absolute;
   top: 50%;
@@ -131,38 +127,28 @@ header {
   z-index: 11;
 }
 
-/* Cell Numbering */
-.map-cell div {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  font-size: 10px;
-  color: deepskyblue;
-}
-
-/* Information Container */
+/* ---------------------- INFORMATION ---------------------- */
 #info-container {
   padding: 20px;
   background-color: #211F1D;
-  flex-shrink: 0; /* Prevent shrinking */
+  flex-shrink: 0;
 }
 
-.InfoTag{
-  font-size: .9em;
+.InfoTag {
+  font-size: 0.9em;
   font-weight: lighter;
   color: #efefe6;
   margin: 3px;
-
 }
 
 #information {
   padding: 2px;
   border: 1px solid #FFFADF;
-  font-size: .7em;
+  font-size: 0.7em;
   color: #efefe6;
 }
 
-/* Footer styles */
+/* ---------------------- FOOTER ---------------------- */
 footer {
   background-color: #333;
   color: white;
@@ -175,15 +161,163 @@ footer {
 }
 
 .FooterTag {
-  font-size: .6em;
+  font-size: 0.6em;
   font-weight: lighter;
   text-align: right;
 }
 
-
-/* Optional: Adjust the map and info container heights */
+/* Map + Info containers */
 #map-container, #info-container {
-  /* Set flex properties to distribute space */
   flex: 1;
   overflow: auto;
+}
+
+/* ---------------------- TRANSITIONS ---------------------- */
+#gallery-container,
+#sidebar,
+#map,
+.map-cell,
+#user-arrow {
+  transition: all 0.25s ease-in-out;
+}
+
+/* ---------------------- MEDIA QUERIES ---------------------- */
+
+/* TIGHT LAYOUT (901px–1100px) */
+@media (max-width: 1100px) and (min-width: 901px) {
+  #gallery-container { width: 80%; }
+  #sidebar { width: 20%; }
+
+  #map {
+    grid-template-columns: repeat(11, 18px);
+    grid-template-rows: repeat(11, 18px);
+  }
+
+  .map-cell {
+    width: 18px;
+    height: 18px;
+  }
+
+  .GalleryTag, .InfoTag, .FooterTag {
+    font-size: 0.8em;
+  }
+
+  #information { font-size: 0.65em; }
+  #user-arrow { width: 12px; height: 12px; }
+}
+
+/* TABLET (<=1024px) */
+@media (max-width: 1024px) {
+  #gallery-container { width: 75%; }
+  #sidebar { width: 25%; }
+
+  #map {
+    grid-template-columns: repeat(11, 16px);
+    grid-template-rows: repeat(11, 16px);
+  }
+
+  .map-cell {
+    width: 16px;
+    height: 16px;
+  }
+
+  #user-arrow { width: 10px; height: 10px; }
+  .GalleryTag, .InfoTag, .FooterTag { font-size: 0.75em; }
+  #information { font-size: 0.65em; }
+  
+  /* Tablet header/footer improvements */
+  header {
+    padding: 12px;
+  }
+  
+  .TitleTag {
+    font-size: 1em;
+    font-weight: normal;
+  }
+  
+  footer {
+    padding: 12px;
+  }
+  
+  .FooterTag {
+    font-size: 0.7em;
+  }
+}
+
+/* MOBILE (<=600px) */
+@media (max-width: 600px) {
+  /* Layout adjustments */
+  #gallery-container { width: 70%; }
+  #sidebar {
+    width: 30%;
+    overflow-y: auto;
+    max-height: 100vh;
+  }
+
+  #map {
+    grid-template-columns: repeat(11, 14px);
+    grid-template-rows: repeat(11, 14px);
+  }
+
+  .map-cell {
+    width: 14px;
+    height: 14px;
+  }
+
+  .GalleryTag, .InfoTag {
+    font-size: 0.7em;
+  }
+
+  #information { font-size: 0.6em; }
+
+  /* Enhanced header for mobile */
+  header {
+    padding: 15px 10px;
+    display: flex;
+    align-items: center;
+    min-height: 50px; /* Ensure minimum clickable height */
+  }
+  
+  .TitleTag {
+    font-size: 1.2em;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+  }
+
+  /* Enhanced footer for mobile */
+  footer {
+    padding: 15px 10px;
+    min-height: 45px; /* Ensure minimum clickable height */
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+  
+  .FooterTag {
+    font-size: 0.85em;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+  }
+}
+
+/* SMALL MOBILE (<=400px) */
+@media (max-width: 400px) {
+  /* Further enhance header/footer for very small screens */
+  header {
+    padding: 16px 10px;
+    min-height: 55px;
+  }
+  
+  .TitleTag {
+    font-size: 1.3em;
+  }
+  
+  footer {
+    padding: 16px 10px;
+    min-height: 50px;
+  }
+  
+  .FooterTag {
+    font-size: 0.9em;
+  }
 }
