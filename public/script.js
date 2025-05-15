@@ -1,430 +1,447 @@
-// script.js - Complete Updated Version (April 20, 2025)
+// public/script.js
+// Main application orchestrator for TSATELIER Interactive Gallery Space
 
-// Define color variables
-let wallColor = '#87857B';
-let artworkBorderColor = '#D8DCD2';
+import {
+  getState,
+  subscribe,
+  // State Setters & Getters from indexState.js
+  updateDeviceAndViewportInfo,
+  setGalleryContainerElement,
+  loadLayoutData, // From galleryMapState
+  loadAllArtworkDetails, // From artworkState
+  getUser, // From galleryMapState
+  getLayout, // From galleryMapState
+  setInfoPanelContent, // From uiState
+  toggleMapVisibilityMobile, // From uiState
+  setLoading, // From uiState
+  setErrorMessage, // From uiState
+  // For History (if you implement UI for it)
+  // recordCurrentStateForHistory, // from historyState via indexState
+  // undo as undoAction, // alias if needed
+} from './state/indexState.js';
 
-// Define the grid size
-const quadTreeGridSize = 11; // Grid is 11x11
+import {
+  initializeNavigation,
+  // handleUserNavigation, // Event listeners in initializeNavigation call this internally
+} from './core/navigationController.js';
 
-// Gallery data (assuming this remains unchanged)
-const galleryData = [
-  // Artworks at (2,1), (3,1), and (4,1) with id 'P7'
-  { id: 'P7', x: 2, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P7', x: 3, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P7', x: 4, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
+import {
+  initializeGalleryScene,
+  updateGalleryScene,
+} from './core/galleryViewManager.js';
 
-  // Artworks at (8,1), (9,1), and (10,1) with id 'P6'
-  { id: 'P6', x: 8, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P6', x: 9, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P6', x: 10, y: 1, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (1,3) and (1,4) with id 'P8'
-  { id: 'P8', x: 1, y: 3, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P8', x: 1, y: 4, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (11,2) and (11,3) with id 'P5'
-  { id: 'P5', x: 11, y: 2, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P5', x: 11, y: 3, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (11,5) and (11,6) with id 'P4'
-  { id: 'P4', x: 11, y: 5, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P4', x: 11, y: 6, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (5,6) and (6,6) with id 'P9'
-  { id: 'P9', x: 5, y: 6, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P9', x: 6, y: 6, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (5,7) and (6,7) with id 'P14'
-  { id: 'P14', x: 5, y: 7, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P14', x: 6, y: 7, borderTop: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (7,8), (7,9), and (7,10) with id 'P13'
-  { id: 'P13', x: 7, y: 8, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P13', x: 7, y: 9, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P13', x: 7, y: 10, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artwork at (8,8) with id 'P2'
-  { id: 'P2', x: 8, y: 8, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (11,8) and (11,9) with id 'P3'
-  { id: 'P3', x: 11, y: 8, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P3', x: 11, y: 9, borderRight: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (1,9) and (1,10) with id 'P10'
-  { id: 'P10', x: 1, y: 9, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P10', x: 1, y: 10, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artwork at (8,10) with id 'P1'
-  { id: 'P1', x: 8, y: 10, borderLeft: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artworks at (2,11) and (3,11) with id 'P11'
-  { id: 'P11', x: 2, y: 11, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-  { id: 'P11', x: 3, y: 11, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-
-  // Artwork at (6,11) with id 'P12'
-  { id: 'P12', x: 6, y: 11, borderBottom: `3px solid ${artworkBorderColor}`, paddingTop: '1px', paddingBottom: '1px' },
-];
-
-// Wall data (assuming this remains unchanged)
-const wallData = [
-  // Row 1 (Top Wall)
-  { x: 1, y: 1, borderLeft: `2px solid ${wallColor}`, borderTop: `2px solid ${wallColor}` },
-  { x: 2, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 3, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 4, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 5, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 6, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 7, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 8, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 9, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 10, y: 1, borderTop: `2px solid ${wallColor}` },
-  { x: 11, y: 1, borderTop: `2px solid ${wallColor}`, borderRight: `2px solid ${wallColor}` },
-
-  // Left Wall (x = 1)
-  { x: 1, y: 2, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 3, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 4, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 5, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 6, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 7, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 8, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 9, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 10, borderLeft: `2px solid ${wallColor}` },
-  { x: 1, y: 11, borderLeft: `2px solid ${wallColor}`, borderBottom: `2px solid ${wallColor}` },
-
-  // Right Wall (x = 11)
-  { x: 11, y: 2, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 3, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 4, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 5, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 6, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 7, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 8, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 9, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 10, borderRight: `2px solid ${wallColor}` },
-  { x: 11, y: 11, borderRight: `2px solid ${wallColor}`, borderBottom: `2px solid ${wallColor}` },
-
-  // Bottom Wall (y = 11)
-  { x: 2, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 3, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 4, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 5, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 6, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 7, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 8, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 9, y: 11, borderBottom: `2px solid ${wallColor}` },
-  { x: 10, y: 11, borderBottom: `2px solid ${wallColor}` },
-
-  // Inner Walls (Horizontal Wall at y = 6)
-  { x: 4, y: 6, borderBottom: `3px solid ${wallColor}` },
-  { x: 5, y: 6, borderBottom: `3px solid ${wallColor}` },
-  { x: 6, y: 6, borderBottom: `3px solid ${wallColor}` },
-  { x: 7, y: 6, borderBottom: `3px solid ${wallColor}` },
-
-  // Inner Walls (Vertical Wall at x = 7)
-  { x: 7, y: 7, borderRight: `3px solid ${wallColor}` },
-  { x: 7, y: 8, borderRight: `3px solid ${wallColor}` },
-  { x: 7, y: 9, borderRight: `3px solid ${wallColor}` },
-  { x: 7, y: 10, borderRight: `3px solid ${wallColor}` },
-  { x: 7, y: 11, borderRight: `3px solid ${wallColor}` },
-];
-
-// --- Get references to HTML elements ---
-const mapElement = document.getElementById("map"); // The grid container div
-const mapContainerElement = document.getElementById("map-container"); // The parent container for map + header
-const infoContainer = document.getElementById("information");
-const mapToggleButton = document.getElementById("map-toggle-button");
-const btnUp = document.getElementById("btn-up");
-const btnDown = document.getElementById("btn-down");
-const btnLeft = document.getElementById("btn-left");
-const btnRight = document.getElementById("btn-right");
+// Import the curated artwork metadata
+// Ensure you have created this file: public/data/artworkManifest.js
+// and populated it with your 14 selected artworks.
+import { artworkManifest } from './data/artworkManifest.js';
 
 
-// --- User Class ---
-class User {
-  constructor(startX, startY) {
-    this.position = { x: startX, y: startY };
-    this.orientation = 'up'; // Initial orientation
-  }
+// --- DOM Element References (cached on init) ---
+let mapElementRef;
+let mapContainerElementRef;
+let infoPanelElementRef; // This is the div where content goes
+let mapToggleButtonRef;
+let userMarkerElement; // For the 2D map
+let userArrowElement;  // Arrow inside the userMarkerElement
 
-  moveForward() {
-    let dx = 0;
-    let dy = 0;
-    switch (this.orientation) {
-      case 'up': dy = -1; break;
-      case 'down': dy = 1; break;
-      case 'left': dx = -1; break;
-      case 'right': dx = 1; break;
-    }
-    const newX = this.position.x + dx;
-    const newY = this.position.y + dy;
-    if (this.canMoveTo(newX, newY)) {
-      this.position.x = newX;
-      this.position.y = newY;
-    }
-  }
+// --- Constants ---
+const APP_GRID_SIZE = 11; // Should ideally be read from state.galleryMap.gridSize after init
 
-  moveBackward() {
-    let dx = 0;
-    let dy = 0;
-    switch (this.orientation) {
-      case 'up': dy = 1; break;
-      case 'down': dy = -1; break;
-      case 'left': dx = 1; break;
-      case 'right': dx = -1; break;
-    }
-    const newX = this.position.x + dx;
-    const newY = this.position.y + dy;
-    if (this.canMoveTo(newX, newY)) {
-      this.position.x = newX;
-      this.position.y = newY;
-    }
-  }
+// --- Initialization Functions ---
 
-  rotateLeft() {
-    switch (this.orientation) {
-      case 'up': this.orientation = 'left'; break;
-      case 'left': this.orientation = 'down'; break;
-      case 'down': this.orientation = 'right'; break;
-      case 'right': this.orientation = 'up'; break;
-    }
-  }
-
-  rotateRight() {
-    switch (this.orientation) {
-      case 'up': this.orientation = 'right'; break;
-      case 'right': this.orientation = 'down'; break;
-      case 'down': this.orientation = 'left'; break;
-      case 'left': this.orientation = 'up'; break;
-    }
-  }
-
-  canMoveTo(x, y) {
-    // Check boundaries
-    if (x < 1 || x > quadTreeGridSize || y < 1 || y > quadTreeGridSize) return false;
-
-    // Check for walls blocking movement from current cell
-    const currentWall = wallData.find(w => w.x === this.position.x && w.y === this.position.y);
-    if (currentWall) {
-      switch (this.orientation) {
-        case 'up': if (currentWall.borderTop) return false; break;
-        case 'down': if (currentWall.borderBottom) return false; break;
-        case 'left': if (currentWall.borderLeft) return false; break;
-        case 'right': if (currentWall.borderRight) return false; break;
-      }
-    }
-
-    // Check for walls blocking movement into next cell
-    const nextWall = wallData.find(w => w.x === x && w.y === y);
-    if (nextWall) {
-      switch (this.orientation) {
-        case 'up': if (nextWall.borderBottom) return false; break; // Coming from below
-        case 'down': if (nextWall.borderTop) return false; break; // Coming from above
-        case 'left': if (nextWall.borderRight) return false; break; // Coming from right
-        case 'right': if (nextWall.borderLeft) return false; break; // Coming from left
-      }
-    }
-    return true;
+/**
+ * Caches references to essential DOM elements.
+ */
+function cacheDOMElements() {
+  mapElementRef = document.getElementById('map');
+  mapContainerElementRef = document.getElementById('map-container');
+  infoPanelElementRef = document.getElementById('information');
+  mapToggleButtonRef = document.getElementById('map-toggle-button');
+  
+  const galleryContainer = document.getElementById('gallery-container');
+  if (galleryContainer) {
+    setGalleryContainerElement(galleryContainer); // Store in state for galleryViewManager
+  } else {
+    console.error("CRITICAL: #gallery-container DOM element not found!");
+    setErrorMessage("Gallery view cannot be initialized: Missing #gallery-container.");
   }
 }
 
-// --- Initialize the user ---
-const user = new User(10, 11); // Start near the door
+/**
+ * Creates the user marker DOM elements for the 2D map.
+ * These are stored globally within this script for now.
+ */
+function createUserMarkerForMap() {
+    userMarkerElement = document.createElement("div");
+    userMarkerElement.id = "user-marker";
+    userMarkerElement.style.position = 'relative'; // For arrow positioning within the grid cell
 
-// --- Create User Marker Element (but don't append yet) ---
-const userMarker = document.createElement("div");
-userMarker.id = "user-marker";
-// Styles for marker container (like width, height, relative positioning) handled by CSS
-userMarker.style.position = 'relative'; // Crucial for absolute positioning of the arrow within
+    userArrowElement = document.createElement("div");
+    userArrowElement.id = "user-arrow";
+    // Basic styles are set here; detailed appearance (shape, color) should be in CSS.
+    userArrowElement.style.position = 'absolute';
+    userArrowElement.style.top = '50%';
+    userArrowElement.style.left = '50%';
+    userArrowElement.style.transform = 'translate(-50%, -50%) rotate(0deg)'; // Initial orientation
+    userMarkerElement.appendChild(userArrowElement);
 
-// --- Create User Arrow Element ---
-const userArrow = document.createElement("div");
-userArrow.id = "user-arrow";
-// Styles for arrow (size, color, shape, absolute positioning) handled by CSS
-// We only need to control the transform for rotation here
-userArrow.style.position = 'absolute';
-userArrow.style.top = '50%';
-userArrow.style.left = '50%';
-userArrow.style.transform = 'translate(-50%, -50%) rotate(0deg)'; // Initial orientation
-userMarker.appendChild(userArrow); // Arrow is inside the marker
+    // The marker is appended to mapElementRef in renderMapGrid after cells are created.
+}
 
-// --- Update User Marker Position and Rotation ---
-function updateUserMarker() {
-  // Set the grid position of the marker container DIV
-  userMarker.style.gridRowStart = user.position.y;
-  userMarker.style.gridColumnStart = user.position.x;
+/**
+ * Processes raw layout data (from layout.json) and artwork manifest
+ * to create the richGalleryData array needed by artworkState.
+ * @param {Array} rawLayoutCells - Array of cell objects from layout.json (now from state.galleryMap.layout).
+ * @param {object} manifest - The artworkManifest object.
+ * @returns {Array} An array of richGalleryData objects.
+ */
+function processDataForArtworkState(rawLayoutCells, manifest) {
+    const richGalleryDataArray = [];
+    if (!rawLayoutCells || rawLayoutCells.length === 0) {
+        console.warn("[DataProcessing] Raw layout data is empty or missing for artwork processing.");
+        return richGalleryDataArray; // Return empty if no layout to process
+    }
+    if (!manifest || Object.keys(manifest).length === 0) {
+        console.warn("[DataProcessing] Artwork manifest is empty or missing.");
+        return richGalleryDataArray; // Return empty if no manifest to reference
+    }
 
-  // Rotate the arrow element inside the marker container
+    rawLayoutCells.forEach(cell => {
+        if (cell.artworkId) { // Check if this cell has an artwork
+            const meta = manifest[cell.artworkId];
+            if (!meta) {
+                console.warn(`[DataProcessing] No metadata in manifest for artworkId: ${cell.artworkId} at cell (${cell.x}, ${cell.y})`);
+                return; // Skip this artwork instance if no metadata found
+            }
+
+            let wallFace = null;
+            // Derive wallFace from artworkBorders (the side of the cell the artwork is on)
+            if (cell.artworkBorders) {
+                if (cell.artworkBorders.top) wallFace = 'bottom'; // Art on top edge of cell faces DOWN
+                else if (cell.artworkBorders.bottom) wallFace = 'top'; // Art on bottom edge of cell faces UP
+                else if (cell.artworkBorders.left) wallFace = 'right'; // Art on left edge of cell faces RIGHT
+                else if (cell.artworkBorders.right) wallFace = 'left'; // Art on right edge of cell faces LEFT
+            }
+
+            if (wallFace) {
+                richGalleryDataArray.push({
+                    id: cell.artworkId, // ID of the artwork piece (e.g., "MERIDIANS_I")
+                    instanceId: `${cell.artworkId}-${cell.x}-${cell.y}`, // Unique ID for this specific placement
+                    x: cell.x, // Grid x-coordinate of this artwork instance's cell
+                    y: cell.y, // Grid y-coordinate of this artwork instance's cell
+                    wallFace: wallFace, // The direction this artwork instance is facing
+                    imageUrl: meta.imageUrl,
+                    actualWidth: meta.actualWidth,
+                    actualHeight: meta.actualHeight,
+                    name: meta.name || `Artwork ${cell.artworkId}`,
+                    description: meta.description || '',
+                    medium: meta.medium || '', // Added from manifest
+                    exhibition: meta.exhibition || '', // Added from manifest
+                    dimensionsOriginal: meta.dimensionsOriginal || '', // Added from manifest
+                });
+            } else {
+                // This warning is important for debugging your layout.json
+                console.warn(`[DataProcessing] Artwork ${cell.artworkId} at cell (${cell.x},${cell.y}) has no defined 'artworkBorders' or it's empty. Cannot determine wallFace.`);
+            }
+        }
+    });
+    return richGalleryDataArray;
+}
+
+/**
+ * Main data initialization sequence.
+ * Fetches layout from server, processes it with local artworkManifest,
+ * and loads all data into the central state.
+ */
+async function initializeApplicationData() {
+  try {
+    setLoading(true); // Update UI state to indicate loading
+    
+    // 1. Load Grid Layout Data (from /data/layout.json served by server.js)
+    // This action populates state.galleryMap.layout and sets state.galleryMap.mapReady
+    await loadLayoutData('/data/layout.json'); // This is an async function from galleryMapState.js
+
+    const currentAppState = getState(); // Get the state *after* layout data should be loaded
+    if (!currentAppState.galleryMap.mapReady) {
+        // loadLayoutData should have set an error message in uiState if it failed.
+        throw new Error("Layout data failed to load or map not marked as ready. Check console for details from galleryMapState.");
+    }
+
+    // 2. Process the loaded layout data with the local artworkManifest
+    const rawLayout = currentAppState.galleryMap.layout; // This is the array of cell objects from layout.json
+    const richGalleryData = processDataForArtworkState(rawLayout, artworkManifest);
+
+    if (richGalleryData.length === 0) {
+        console.warn("[AppInit] No rich artwork data was processed. Check layout.json for artworkId entries and artworkManifest.js for corresponding IDs and artworkBorders in layout.json.");
+    }
+
+    // 3. Load Processed Artwork Instance Data (richGalleryData) into artworkState
+    // This populates state.artworks.data (unique artwork details) and state.artworks.richGalleryData (all instances)
+    loadAllArtworkDetails(richGalleryData); // This is a synchronous state update
+
+    console.log("[AppInit] Application data (layout and artworks) processed and loaded into state.");
+    // setLoading(false); // Keep loading true until the entire app UI is ready
+
+  } catch (error) {
+    console.error("[AppInit] CRITICAL ERROR during data initialization:", error);
+    setErrorMessage(`App data error: ${error.message}`); // Update UI state with error
+    setLoading(false); // Ensure loading is false on critical error
+    throw error; // Re-throw to stop further app initialization if data load fails
+  }
+}
+
+// --- UI Update Functions (called by state subscriber or during init) ---
+
+/**
+ * Renders the 2D map grid based on layout data from the state.
+ */
+function renderMapGrid() {
+  if (!mapElementRef) {
+    console.error("[RenderMap] Map DOM element not cached (mapElementRef is null). Cannot render grid.");
+    return;
+  }
+  mapElementRef.innerHTML = ''; // Clear previous grid (user marker will be re-added)
+
+  const { galleryMap } = getState(); // Get the relevant slice of state
+  const layoutCells = galleryMap.layout; // This is the array of cell objects from layout.json
+  const gridSize = galleryMap.gridSize || APP_GRID_SIZE; // Use state's gridSize or fallback
+
+  if (!galleryMap.mapReady || !layoutCells || layoutCells.length === 0) {
+    mapElementRef.textContent = "Map data loading or unavailable...";
+    console.warn("[RenderMap] Map not ready or layout data is empty. Cannot render map grid.");
+    return;
+  }
+  
+  // Ensure mapElementRef is styled as a grid container by CSS or here
+  mapElementRef.style.display = 'grid';
+  mapElementRef.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+  mapElementRef.style.gridTemplateRows = `repeat(${gridSize}, 1fr)`;
+
+  // Create a map of cell data for efficient lookup by "x-y" string key
+  const cellDataMap = new Map();
+  layoutCells.forEach(cell => cellDataMap.set(`${cell.x}-${cell.y}`, cell));
+
+  for (let r = 1; r <= gridSize; r++) { // row (y)
+    for (let c = 1; c <= gridSize; c++) { // column (x)
+      const cellDiv = document.createElement('div');
+      cellDiv.classList.add('map-cell');
+      // cellDiv.title = `Cell (${c},${r})`; // For hover debugging
+
+      const cellDetails = cellDataMap.get(`${c}-${r}`);
+      if (cellDetails) {
+        // Apply Wall Borders from cellDetails.wallBorders
+        if (cellDetails.isWall && cellDetails.wallBorders) {
+          // Use CSS variables if defined, otherwise fallback to a default color
+          const wallBorderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-map-border').trim() || '#87857B';
+          if (cellDetails.wallBorders.top) cellDiv.style.borderTop = `2px solid ${wallBorderColor}`;
+          if (cellDetails.wallBorders.bottom) cellDiv.style.borderBottom = `2px solid ${wallBorderColor}`;
+          if (cellDetails.wallBorders.left) cellDiv.style.borderLeft = `2px solid ${wallBorderColor}`;
+          if (cellDetails.wallBorders.right) cellDiv.style.borderRight = `2px solid ${wallBorderColor}`;
+        }
+        // Apply Artwork Markers on the map (visual indicators, not the 3D view)
+        if (cellDetails.artworkId && cellDetails.artworkBorders) {
+          const artworkMapMarker = document.createElement('div');
+          artworkMapMarker.classList.add('artwork-on-map-marker'); // Style this class in CSS
+          // Example: Simple dot or small square. Could be color-coded.
+          // artworkMapMarker.title = `Artwork: ${cellDetails.artworkId}`;
+          const artworkBorderColor = getComputedStyle(document.documentElement).getPropertyValue('--color-map-artwork-border').trim() || '#D8DCD2';
+          if (cellDetails.artworkBorders.top) artworkMapMarker.style.cssText = `position:absolute; top:0; left:0; right:0; height:3px; background-color:${artworkBorderColor};`;
+          else if (cellDetails.artworkBorders.bottom) artworkMapMarker.style.cssText = `position:absolute; bottom:0; left:0; right:0; height:3px; background-color:${artworkBorderColor};`;
+          else if (cellDetails.artworkBorders.left) artworkMapMarker.style.cssText = `position:absolute; top:0; bottom:0; left:0; width:3px; background-color:${artworkBorderColor};`;
+          else if (cellDetails.artworkBorders.right) artworkMapMarker.style.cssText = `position:absolute; top:0; bottom:0; right:0; width:3px; background-color:${artworkBorderColor};`;
+          cellDiv.appendChild(artworkMapMarker);
+        }
+      }
+      mapElementRef.appendChild(cellDiv);
+    }
+  }
+  // Re-append user marker after clearing and rebuilding grid
+  if(userMarkerElement) {
+    mapElementRef.appendChild(userMarkerElement);
+  } else {
+    console.warn("[RenderMap] userMarkerElement not created before map render, cannot append.");
+  }
+  // console.log("[RenderMap] Map grid rendered.");
+}
+
+/**
+ * Updates the position and rotation of the user marker on the 2D map.
+ */
+function updateUserMarkerOnMap() {
+  if (!userMarkerElement || !userArrowElement) {
+    // This might be called by subscriber before elements are ready on initial load.
+    // console.warn("[UpdateMarker] User marker or arrow element not available yet.");
+    return;
+  }
+  const userState = getUser(); // From galleryMapState (already cloned)
+  userMarkerElement.style.gridRowStart = userState.position.y;
+  userMarkerElement.style.gridColumnStart = userState.position.x;
+
   let rotationDegree = 0;
-  switch (user.orientation) {
+  switch (userState.orientation) {
     case 'up': rotationDegree = 0; break;
     case 'down': rotationDegree = 180; break;
     case 'left': rotationDegree = 270; break;
     case 'right': rotationDegree = 90; break;
   }
-  userArrow.style.transform = `translate(-50%, -50%) rotate(${rotationDegree}deg)`;
+  userArrowElement.style.transform = `translate(-50%, -50%) rotate(${rotationDegree}deg)`;
 }
 
-// --- Update Information Panel ---
-function updateInformation() {
-  const currentSquareNumber = (user.position.y - 1) * quadTreeGridSize + user.position.x;
-  let infoText = `Pos: (${user.position.x}, ${user.position.y}) | Sq: ${currentSquareNumber} | Facing: ${user.orientation}`;
-  const artwork = galleryData.find(picture => picture.x === user.position.x && picture.y === user.position.y);
-  if (artwork) {
-    infoText += ` - Near: ${artwork.id}`;
+/**
+ * Updates the content of the HTML information panel based on current state.
+ */
+function updateInformationPanel() {
+  if (!infoPanelElementRef) return;
+
+  const userState = getUser(); // { position, orientation }
+  const { artworks, galleryMap, galleryView, device } = getState(); // Get relevant state slices
+  const gridSize = galleryMap.gridSize || APP_GRID_SIZE;
+
+  const currentSquareNumber = (userState.position.y - 1) * gridSize + userState.position.x;
+  let infoLines = [
+    `Device: ${device.type} (${device.viewportWidth}x${device.viewportHeight}) ${device.orientation}`,
+    `User: (${userState.position.x}, ${userState.position.y}) | Cell: ${currentSquareNumber} | Facing: ${userState.orientation}`
+  ];
+
+  // Artwork user is standing in/near (from 2D map layout)
+  const cellUserIsIn = galleryMap.layout.find(c => c.x === userState.position.x && c.y === userState.position.y);
+  if (cellUserIsIn && cellUserIsIn.artworkId && artworks.data[cellUserIsIn.artworkId]) {
+      const artMeta = artworks.data[cellUserIsIn.artworkId];
+      infoLines.push(`At: ${artMeta.name || artMeta.id} (${artMeta.dimensionsOriginal || 'N/A'})`);
   }
-  infoContainer.textContent = infoText; // Update the text content
+
+  // Artwork currently being viewed in the 3D gallery
+  if (galleryView.currentArtworkIdInView && artworks.data[galleryView.currentArtworkIdInView]) {
+      const viewedArt = artworks.data[galleryView.currentArtworkIdInView];
+      infoLines.push(`Viewing: ${viewedArt.name || viewedArt.id} (${viewedArt.dimensionsOriginal || 'N/A'})`);
+      if(viewedArt.medium) infoLines.push(`Medium: ${viewedArt.medium}`);
+      if(viewedArt.exhibition) infoLines.push(`Exhibition: ${viewedArt.exhibition}`);
+  }
+  
+  setInfoPanelContent(infoLines.join('<br>')); // Update state; subscriber will update DOM
 }
 
-// --- Create Map Grid and Populate ---
-function createMapGrid() {
-    mapElement.innerHTML = ''; // Clear previous grid content first
+/**
+ * Handles state changes from the pubsub system and triggers relevant UI updates.
+ * @param {object} newState - The new application state (cloned).
+ */
+function handleStateChange(newState) {
+  // console.log("[StateChange] Detected state change. New user pos:", newState.galleryMap.user.position);
 
-    for (let y = 1; y <= quadTreeGridSize; y++) {
-        for (let x = 1; x <= quadTreeGridSize; x++) {
-            const cell = document.createElement('div');
-            cell.classList.add('map-cell');
-            // CSS grid handles the flow, direct row/col styles not needed here
-            cell.style.position = 'relative'; // For positioning children like numbers/artwork
-            cell.style.zIndex = '1';          // Base z-index
+  // Update UI elements based on changes in the new state.
+  // These functions read from the state internally.
+  updateUserMarkerOnMap();
+  updateInformationPanel();
+  updateGalleryScene(); // For the 3D view
 
-            // Add cell numbering (optional to display via CSS later)
-            const cellNumber = document.createElement('div');
-            // Styles for number element (pos, size, color) handled by CSS mostly
-            cellNumber.style.position = 'absolute';
-            cellNumber.style.top = '2px';
-            cellNumber.style.left = '2px';
-            cellNumber.style.fontSize = '10px'; // Keep small
-            cellNumber.style.color = '#EFEFE6'; // Or use CSS variable
-            cellNumber.textContent = (y - 1) * quadTreeGridSize + x;
-            cellNumber.style.display = 'none'; // Hidden by default
-            cell.appendChild(cellNumber);
+  // Update info panel DOM from uiState.infoPanelContent (which was set by updateInformationPanel)
+  if (infoPanelElementRef && infoPanelElementRef.innerHTML !== newState.ui.infoPanelContent) {
+    infoPanelElementRef.innerHTML = newState.ui.infoPanelContent;
+  }
 
-            // Apply Wall Borders from wallData
-            const wall = wallData.find(w => w.x === x && w.y === y);
-            if (wall) {
-                if (wall.borderTop) cell.style.borderTop = wall.borderTop;
-                if (wall.borderLeft) cell.style.borderLeft = wall.borderLeft;
-                if (wall.borderRight) cell.style.borderRight = wall.borderRight;
-                if (wall.borderBottom) cell.style.borderBottom = wall.borderBottom;
-                cell.style.zIndex = '2'; // Ensure walls are above base cell
-            }
-
-            // Apply Artwork Borders from galleryData
-            const artwork = galleryData.find(picture => picture.x === x && picture.y === y);
-            if (artwork) {
-                const artworkElement = document.createElement('div');
-                artworkElement.classList.add('artwork');
-                // Base styles (width, height, position, z-index=5) handled by CSS
-                artworkElement.style.margin = '0';
-                artworkElement.style.padding = '0'; // Base padding
-
-                // Apply specific padding from data if needed
-                if (artwork.paddingTop) artworkElement.style.paddingTop = artwork.paddingTop;
-                if (artwork.paddingBottom) artworkElement.style.paddingBottom = artwork.paddingBottom;
-                artworkElement.style.paddingLeft = '0'; // Ensure no horizontal gaps
-                artworkElement.style.paddingRight = '0';
-
-                // ** Apply specific artwork borders (Ensure NO 'border: none' line was here) **
-                if (artwork.borderTop) artworkElement.style.borderTop = artwork.borderTop;
-                if (artwork.borderLeft) artworkElement.style.borderLeft = artwork.borderLeft;
-                if (artwork.borderRight) artworkElement.style.borderRight = artwork.borderRight;
-                if (artwork.borderBottom) artworkElement.style.borderBottom = artwork.borderBottom;
-
-                cell.appendChild(artworkElement); // Add artwork div to the cell
-            }
-            mapElement.appendChild(cell); // Add the completed cell to the map grid
-        }
+  // Mobile map toggle DOM update
+  if (mapContainerElementRef && mapToggleButtonRef) {
+    const icon = mapToggleButtonRef.querySelector('.toggle-icon');
+    if (newState.ui.mapVisibleMobile) {
+        mapContainerElementRef.classList.remove('map-collapsed');
+        if(icon) icon.textContent = '▼';
+        mapToggleButtonRef.setAttribute('aria-expanded', 'true');
+    } else {
+        mapContainerElementRef.classList.add('map-collapsed');
+        if(icon) icon.textContent = '▶';
+        mapToggleButtonRef.setAttribute('aria-expanded', 'false');
     }
-    // After all cells are in the grid, append the user marker element
-    mapElement.appendChild(userMarker);
+  }
+
+  // Loading indicator on body (add a class like 'app-is-loading' to body in CSS)
+  if (newState.ui.isLoading) {
+    document.body.classList.add('app-is-loading');
+  } else {
+    document.body.classList.remove('app-is-loading');
+  }
+
+  // Error message display
+  const errorDisplayElement = document.getElementById('app-error-display');
+  if (errorDisplayElement) {
+    if (newState.ui.errorMessage) {
+        errorDisplayElement.textContent = newState.ui.errorMessage;
+        errorDisplayElement.style.display = 'block';
+    } else {
+        errorDisplayElement.textContent = '';
+        errorDisplayElement.style.display = 'none';
+    }
+  }
 }
 
+/**
+ * Main application initialization function.
+ */
+async function initializeApp() {
+  console.log("[AppInit] Initializing TSATELIER Application (Modular)...");
+  setLoading(true); // Set initial loading state
+  cacheDOMElements();
 
-// --- Central Handler for User Actions ---
-function handleUserAction(action) {
-    switch (action) {
-        case "up":    user.moveForward(); break;
-        case "down":  user.moveBackward(); break;
-        case "left":  user.rotateLeft(); break;
-        case "right": user.rotateRight(); break;
+  // Initialize device state and set up listeners for window resize/orientation
+  updateDeviceAndViewportInfo(); // Initial call
+  window.addEventListener('resize', updateDeviceAndViewportInfo);
+  window.addEventListener('orientationchange', updateDeviceAndViewportInfo);
+
+  try {
+    // Load layout (from /data/layout.json) and artwork metadata (from artworkManifest.js) into state
+    await initializeApplicationData(); // This is crucial and async
+  } catch (e) {
+    console.error("[AppInit] Stopping app initialization due to data loading failure.");
+    // Error message should have been set in uiState by initializeApplicationData
+    // The state subscriber (if already active, or first call to handleStateChange) will display it.
+    // For safety, explicitly update error display here too.
+    const errorDisplayElement = document.getElementById('app-error-display');
+    if(errorDisplayElement) {
+        errorDisplayElement.textContent = getState().ui.errorMessage || "Critical data loading error.";
+        errorDisplayElement.style.display = 'block';
     }
-    updateUserMarker(); // Update visual position/rotation
-    updateInformation(); // Update text info
-}
+    setLoading(false);
+    return; // Stop further initialization
+  }
 
-// --- Keyboard Event Listener ---
-document.addEventListener('keydown', (e) => {
-    // Use a map for cleaner key handling
-    const keyActionMap = {
-        "ArrowUp": "up",
-        "ArrowDown": "down",
-        "ArrowLeft": "left",
-        "ArrowRight": "right"
-    };
-    const action = keyActionMap[e.key];
-    if (action) {
-        handleUserAction(action);
-    }
-});
+  // Create the user marker for the 2D map (must be done before first map render if map clears children)
+  createUserMarkerForMap();
 
-// --- On-Screen Navigation Button Event Listeners ---
-// Use optional chaining (?) in case elements aren't found
-btnUp?.addEventListener('click', () => handleUserAction('up'));
-btnDown?.addEventListener('click', () => handleUserAction('down'));
-btnLeft?.addEventListener('click', () => handleUserAction('left'));
-btnRight?.addEventListener('click', () => handleUserAction('right'));
+  // Initial render of the 2D map grid (uses data from galleryMapState)
+  renderMapGrid();
 
-// --- Map Toggle Button Event Listener ---
-mapToggleButton?.addEventListener('click', () => {
-    // Toggle the class on the container that holds the map and its header
-    mapContainerElement.classList.toggle('map-collapsed');
+  // Initialize navigation controls (keyboard, buttons) - this sets up event listeners
+  initializeNavigation(); // From navigationController.js
 
-    // Optional: Update button icon/text for visual feedback
-    const icon = mapToggleButton.querySelector('.toggle-icon');
-    if (icon) {
-        if (mapContainerElement.classList.contains('map-collapsed')) {
-            icon.textContent = '▶'; // Or other appropriate icon/text
-            mapToggleButton.setAttribute('aria-expanded', 'false'); // Accessibility
-        } else {
-            icon.textContent = '▼'; // Or other appropriate icon/text
-            mapToggleButton.setAttribute('aria-expanded', 'true'); // Accessibility
-        }
-    }
-});
+  // Initialize the 3D gallery scene (creates hidden divs for artworks in #gallery-container)
+  // This needs the #gallery-container to be set in state and artwork data to be loaded
+  initializeGalleryScene(); // From galleryViewManager.js
 
+  // Perform initial UI updates based on the fully loaded state
+  updateUserMarkerOnMap();  // Place user marker correctly
+  updateInformationPanel(); // Populate info panel
+  updateGalleryScene();     // Show initial 3D view if applicable
 
-// --- Initial Setup on Page Load ---
-createMapGrid();      // Draw the map and artwork/walls
-updateUserMarker();   // Place the user marker in the correct starting cell/orientation
-updateInformation();  // Display the initial user position and info
-
-// --- Functions to update styles dynamically (if needed, keep as is) ---
-function updateWallStyles() {
-    const wallCells = document.querySelectorAll('.map-cell');
-    wallCells.forEach(cell => {
-        // Example: Update border color dynamically
-        if (cell.style.borderTop?.includes('solid')) cell.style.borderTop = cell.style.borderTop.replace(/solid .+$/, `solid ${wallColor}`);
-        if (cell.style.borderLeft?.includes('solid')) cell.style.borderLeft = cell.style.borderLeft.replace(/solid .+$/, `solid ${wallColor}`);
-        if (cell.style.borderRight?.includes('solid')) cell.style.borderRight = cell.style.borderRight.replace(/solid .+$/, `solid ${wallColor}`);
-        if (cell.style.borderBottom?.includes('solid')) cell.style.borderBottom = cell.style.borderBottom.replace(/solid .+$/, `solid ${wallColor}`);
-     });
-}
-
-function updateArtworkStyles() {
-    const artworks = document.querySelectorAll('.artwork');
-    artworks.forEach(artwork => {
-         // Example: Update border color dynamically
-        if (artwork.style.borderTop?.includes('solid')) artwork.style.borderTop = artwork.style.borderTop.replace(/solid .+$/, `solid ${artworkBorderColor}`);
-        if (artwork.style.borderLeft?.includes('solid')) artwork.style.borderLeft = artwork.style.borderLeft.replace(/solid .+$/, `solid ${artworkBorderColor}`);
-        if (artwork.style.borderRight?.includes('solid')) artwork.style.borderRight = artwork.style.borderRight.replace(/solid .+$/, `solid ${artworkBorderColor}`);
-        if (artwork.style.borderBottom?.includes('solid')) artwork.style.borderBottom = artwork.style.borderBottom.replace(/solid .+$/, `solid ${artworkBorderColor}`);
+  // Setup mobile map toggle listener (if the button exists)
+  if (mapToggleButtonRef) {
+    mapToggleButtonRef.addEventListener('click', () => {
+        toggleMapVisibilityMobile(); // Dispatch action to update state, subscriber handles DOM
     });
+  } else {
+    console.warn("[AppInit] Mobile map toggle button #map-toggle-button not found.");
+  }
+
+  // Subscribe to all subsequent state changes to keep UI reactive
+  subscribe(handleStateChange);
+
+  setLoading(false); // All initial setup is complete
+  console.log("[AppInit] TSATELIER Application Initialized and Ready.");
+
+  // Example: If you want to record the initial state for history
+  // This requires history.js to be integrated into indexState.js
+  // import { recordCurrentStateForHistory } from './state/indexState.js';
+  // if (typeof recordCurrentStateForHistory === 'function') recordCurrentStateForHistory();
 }
 
-// Example usage to change colors dynamically (keep commented out unless needed)
-// wallColor = 'blue';
-// artworkBorderColor = 'green';
-// updateWallStyles();
-// updateArtworkStyles();
+// --- Application Start ---
+// Wait for the DOM to be fully loaded before initializing the app
+document.addEventListener('DOMContentLoaded', initializeApp);

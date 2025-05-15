@@ -19,33 +19,37 @@
             <div id="map-container">
                 <div class="sidebar-header">
                      <h3 class="GalleryTag">Gallery Map</h3>
-                     <button id="map-toggle-button" class="mobile-only map-toggle">
-                         <span class="toggle-icon">▼</span>
-                     </button>
+                     <button id="map-toggle-button" class="mobile-only map-toggle" aria-label="Toggle Map View" aria-expanded="true">
+                         <span class="toggle-icon">▼</span> </button>
                 </div>
-                <div id="map"></div>
+                <div id="map">
+                    </div>
             </div>
 
             <div id="info-container">
                 <h3 class="InfoTag">Information</h3>
-                <div id="information"></div>
+                <div id="information">
+                    </div>
             </div>
 
             <div id="nav-controls">
-                <button id="btn-left" class="nav-button">◀</button>
+                <button id="btn-left" class="nav-button" aria-label="Rotate Left">◀</button>
                 <div class="nav-up-down">
-                     <button id="btn-up" class="nav-button">▲</button>
-                     <button id="btn-down" class="nav-button">▼</button>
+                     <button id="btn-up" class="nav-button" aria-label="Move Forward">▲</button>
+                     <button id="btn-down" class="nav-button" aria-label="Move Backward">▼</button>
                 </div>
-                <button id="btn-right" class="nav-button">▶</button>
+                <button id="btn-right" class="nav-button" aria-label="Rotate Right">▶</button>
             </div>
         </div>
     </div>
 
+    <div id="app-error-display" style="color: #721c24; background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 10px; text-align: center; display: none; position: fixed; bottom: 0; width: 100%; z-index: 9999;" role="alert">
+        </div>
+
     <footer>
-        <p class="FooterTag">_RDEXENV&copy; 2024</p>
+        <p class="FooterTag">TSATELIER | Roderick Shoolbraid | RDXENV&copy; 2025</p>
     </footer>
 
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 </body>
 </html>

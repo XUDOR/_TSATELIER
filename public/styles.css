@@ -1,4 +1,4 @@
-/* styles.css - Nav Controls Always Visible, Sidebar Scroll */
+/* styles.css - Updated for Modular JS and Pseudo-3D View */
 
 /* ---------------------- VARIABLES ---------------------- */
 :root {
@@ -6,9 +6,10 @@
   --color-bg-body: #f0f0f0;
   --color-bg-header-footer: #333;
   --color-text-header-footer: white;
-  --color-bg-gallery: #2D2C2A;
+  --color-bg-gallery: #2D2C2A; /* Used for #gallery-container background */
   --color-bg-sidebar: black;
   --color-map-border: #87857B;
+  --color-map-artwork-border: #D8DCD2; /* Added for artwork markers on map */
   --color-map-cell-bg: black;
   --color-map-cell-number: deepskyblue;
   --color-user-arrow: #efefe6;
@@ -19,6 +20,8 @@
   --color-nav-button-bg: #444;
   --color-nav-button-text: white;
   --color-nav-button-hover-bg: #666;
+  --color-artwork-view-bg: #1a1a1a; /* Placeholder bg for .artwork-view */
+  --color-artwork-view-border: #444; /* Border for .artwork-view */
 }
 
 /* ---------------------- RESET & BASE ---------------------- */
@@ -48,6 +51,22 @@ body {
   line-height: 1.5;
 }
 
+/* Global loading state indicator */
+body.app-is-loading::after {
+  content: "Loading Application...";
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: rgba(0,0,0,0.7);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  z-index: 10000;
+  font-size: 0.9rem;
+}
+
+
 /* ---------------------- HEADER ---------------------- */
 header {
   background-color: var(--color-bg-header-footer);
@@ -68,21 +87,58 @@ header {
   flex: 1;
   display: flex;
   width: 100%;
-  overflow: hidden; /* Prevent main content itself from overflowing */
+  overflow: hidden; 
 }
 
-/* ---------------------- GALLERY CONTAINER (LEFT) ---------------------- */
+/* ---------------------- GALLERY CONTAINER (LEFT) - UPDATED for 3D View ---------------------- */
 #gallery-container {
-  width: 85%;
+  width: 85%; /* Or adjust as needed */
   background-color: var(--color-bg-gallery);
   position: relative;
-  perspective: 1000px;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: flex-start;
-  overflow: hidden;
+  display: flex; /* Use flex to help center the artwork */
+  justify-content: center; /* UPDATED from flex-start */
+  align-items: center;    /* UPDATED from flex-start */
+  overflow: hidden;      /* Clip artwork if it transforms outside bounds */
+
+  /* Perspective Settings - CRITICAL for 3D effect */
+  perspective: 800px; /* Adjust this value to control depth intensity. Original was 1000px, PDF example 800px */
+  perspective-origin: center center; /* Default, but good to be explicit */
+  transform-style: preserve-3d; /* ADDED - Allows child elements to exist in the 3D space */
 }
+
+/* NEW: Styles for the artwork elements within the gallery container (3D view) */
+.artwork-view {
+  position: absolute; /* Position relative to gallery-container */
+  width: 60%; /* Example size - adjust as needed or make dynamic */
+  height: 70%; /* Example size - adjust as needed or make dynamic */
+  
+  /* For displaying the artwork image */
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+  
+  background-color: var(--color-artwork-view-bg); /* Placeholder background if image fails or for loading */
+  border: 5px solid var(--color-artwork-view-border); /* Example border */
+  box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
+
+  /* Initially hidden, made visible by adding 'visible' class via JS */
+  display: none;
+  opacity: 0;
+
+  /* Default Transform State (looking head-on) */
+  transform: rotateY(0deg) translateX(0px) scale(1);
+  transform-origin: center center; /* Default origin, JS will update this */
+
+  /* Smooth Transitions for transform and opacity changes */
+  transition: transform 0.4s cubic-bezier(0.25, 0.8, 0.25, 1),
+              opacity 0.3s ease-in-out;
+}
+
+.artwork-view.visible {
+  display: block; /* Or flex/grid if content inside needs alignment */
+  opacity: 1;
+}
+
 
 /* ---------------------- SIDEBAR (RIGHT) ---------------------- */
 #sidebar {
@@ -90,24 +146,22 @@ header {
   background-color: var(--color-bg-sidebar);
   display: flex;
   flex-direction: column;
-  overflow-x: hidden; /* Prevent horizontal overflow within sidebar */
-  overflow-y: auto;   /* Allow vertical scroll if content (map+info+nav) exceeds height */
+  overflow-x: hidden; 
+  overflow-y: auto;   
 }
 
-/* Map + Info containers */
 #map-container,
 #info-container {
-  padding: 1.25rem; /* 20px */
+  padding: 1.25rem; 
   display: flex;
   flex-direction: column;
-  /* overflow: auto; */ /* Let parent sidebar handle scrolling */
-  flex-shrink: 0; /* Prevent shrinking unless necessary */
+  flex-shrink: 0; 
   max-width: 100%;
 }
 
 #map-container {
   border-bottom: 1px solid #444;
-  align-items: center; /* Center map grid */
+  align-items: center; 
 }
 
 .sidebar-header {
@@ -127,73 +181,79 @@ header {
 #info-container {
   background-color: var(--color-bg-info);
   word-wrap: break-word;
-  flex-grow: 1; /* Allow info to take available space */
-  align-items: stretch; /* Ensure children stretch */
+  flex-grow: 1; 
+  align-items: stretch; 
 }
 
 /* ---------------------- MAP ---------------------- */
 #map {
   display: grid;
-  grid-template-columns: repeat(11, 22px);
-  grid-template-rows: repeat(11, 22px);
+  /* JS (renderMapGrid) now sets grid-template-columns/rows to 1fr for flexibility */
+  /* grid-template-columns: repeat(11, 22px); */ /* Original fixed size */
+  /* grid-template-rows: repeat(11, 22px);    */ /* Original fixed size */
   background-color: var(--color-map-cell-bg);
   border: 2px solid var(--color-map-border);
   transition: opacity 0.3s ease-in-out, max-height 0.3s ease-in-out;
   opacity: 1;
-  max-height: 500px; /* Arbitrary large height for transition */
+  max-height: 500px; 
+  width: calc(22px * 11 + 4px); /* Example: if cells are 22px, plus 2*2px border */
+  height: calc(22px * 11 + 4px); /* Maintain aspect ratio if cells are square */
+  margin: 0 auto; /* Center the map if its container is wider */
 }
 
 .map-cell {
-  width: 22px;
-  height: 22px;
+  /* width and height are now effectively 1fr if JS sets grid-template-* to 1fr */
+  /* width: 22px; */ /* Original fixed size */
+  /* height: 22px;*/ /* Original fixed size */
   background-color: var(--color-map-cell-bg);
-  position: relative;
+  position: relative; /* For absolute positioning of artwork markers within cell */
+  /* border: 1px solid #222; */ /* Optional: for cell outlines if not using wall borders */
 }
 
-/* Artwork */
-.artwork {
-  width: 100%;
-  height: 100%;
-  background-color: transparent;
+/* OLD .artwork class was for artwork borders on map cells, JS now creates specific elements */
+/* .artwork { ... } */
+
+/* NEW: For simple artwork markers on the 2D map grid */
+.artwork-on-map-marker {
   position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 5;
+  /* Example style: a small colored square or line indicating an artwork border */
+  /* The JS in renderMapGrid sets specific border styles for these */
+  /* You might add a default size or background if borders aren't enough */
+  /* e.g., width: 50%; height: 50%; top: 25%; left: 25%; background-color: rgba(255,255,0,0.3); */
 }
 
-/* Cell Numbering */
+
+/* Cell Numbering (original, kept for reference, JS doesn't add this now) */
 .map-cell div {
   position: absolute;
   top: 2px;
   left: 2px;
   font-size: 10px;
   color: var(--color-map-cell-number);
-  display: none; /* Hidden by default */
+  display: none; 
 }
 
-/* ---------------------- USER MARKER ---------------------- */
-/* No specific styles needed for #user-marker itself, it's positioned by grid */
+/* ---------------------- USER MARKER (on 2D map) ---------------------- */
 #user-marker {
-    /* Ensure it occupies the grid cell correctly */
-    width: 100%;
+    width: 100%; /* Occupies the grid cell */
     height: 100%;
-    /* z-index is managed by grid context or default flow */
+    /* Placed by grid-row-start and grid-column-start in JS */
+    z-index: 10; /* Ensure user marker is above map cells but below UI popups */
 }
-
 
 #user-arrow {
-  position: absolute; /* Positioned within user-marker */
+  position: absolute; 
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%) rotate(0deg);
-  width: 12px;
+  transform: translate(-50%, -50%) rotate(0deg); /* JS updates rotation */
+  width: 12px; /* Or use em/rem for scalability */
   height: 12px;
   background-color: var(--color-user-arrow);
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  z-index: 11; /* Above marker content */
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%); /* Triangle shape */
+  z-index: 11; /* Above its container cell content */
 }
 
-/* ---------------------- INFORMATION ---------------------- */
+/* ---------------------- INFORMATION PANEL ---------------------- */
 #information {
   padding: 0.5rem;
   border: 1px solid var(--color-border-info);
@@ -204,10 +264,10 @@ header {
   word-break: break-word;
   overflow-wrap: break-word;
   line-height: 1.4;
-  min-height: 5rem;
-  flex-grow: 1;
+  min-height: 5rem; /* Ensure it has some height */
+  flex-grow: 1; /* Allow it to take available space in sidebar */
   background-color: var(--color-bg-info);
-  overflow-y: auto; /* Allow scrolling within info box if needed */
+  overflow-y: auto; 
 }
 
 /* ---------------------- FOOTER ---------------------- */
@@ -217,7 +277,7 @@ footer {
   padding: 0.625rem;
   text-align: center;
   width: 100%;
-  z-index: 1000;
+  z-index: 1000; /* Above other content */
   flex-shrink: 0;
 }
 
@@ -227,13 +287,29 @@ footer {
   text-align: right;
 }
 
-/* ---------------------- MOBILE ONLY ELEMENTS (Toggle Button) ---------------------- */
-/* Hide elements with this class by default */
-.mobile-only {
-  display: none;
+/* NEW: For displaying application-level error messages */
+#app-error-display {
+    color: #721c24; /* Dark red */
+    background-color: #f8d7da; /* Light red */
+    border: 1px solid #f5c6cb; /* Medium red */
+    padding: 0.75rem 1.25rem;
+    margin-bottom: 1rem; /* Or position fixed/absolute as needed */
+    border-radius: 0.25rem;
+    text-align: left;
+    display: none; /* JS will show it */
+    position: fixed; /* Example: fixed at bottom */
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    z-index: 9999;
 }
 
-/* Map Toggle Button Specific Styles */
+
+/* ---------------------- MOBILE ONLY ELEMENTS (Toggle Button) ---------------------- */
+.mobile-only {
+  display: none; /* Hidden by default, shown in media query */
+}
+
 #map-toggle-button {
   background: none;
   border: 1px solid var(--color-tag-text);
@@ -248,18 +324,19 @@ footer {
     transition: transform 0.3s ease-in-out;
 }
 
-/* Collapsed State for Map (Triggered by JS adding class) */
+/* Collapsed State for Map (JS toggles 'map-collapsed' on #map-container) */
 #map-container.map-collapsed #map {
     opacity: 0;
     max-height: 0;
     overflow: hidden;
     border-width: 0;
-    margin-top: 0;
+    margin-top: 0; /* Remove margin when collapsed */
+    padding: 0; /* Remove padding when collapsed */
 }
 #map-container.map-collapsed .toggle-icon {
-    transform: rotate(-90deg);
+    transform: rotate(-90deg); /* Point right when collapsed */
 }
-#map-container.map-collapsed {
+#map-container.map-collapsed { /* Adjust padding of container when map is collapsed */
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
 }
@@ -267,14 +344,14 @@ footer {
 
 /* ---------------------- NAVIGATION CONTROLS (Always Visible) ---------------------- */
 #nav-controls {
-    display: flex; /* Always visible */
+    display: flex; 
     flex-direction: row;
     justify-content: space-around;
     align-items: center;
     padding: 0.75rem 0.5rem;
-    background-color: var(--color-bg-info); /* Match info background */
+    background-color: var(--color-bg-info); 
     border-top: 1px solid #444;
-    flex-shrink: 0; /* Prevent shrinking */
+    flex-shrink: 0; 
 }
 
 .nav-up-down {
@@ -309,92 +386,107 @@ footer {
 }
 
 
-/* ---------------------- TRANSITIONS ---------------------- */
+/* ---------------------- TRANSITIONS (Consolidated) ---------------------- */
 #gallery-container,
 #sidebar,
 #map,
 .map-cell,
 #user-arrow,
 header,
-footer {
-  transition: all 0.25s ease-in-out;
+footer,
+.artwork-view /* Added .artwork-view here */ {
+  transition: all 0.25s ease-in-out; /* General transition for many elements */
 }
+/* Specific transitions for .artwork-view are defined in its own rule for transform and opacity */
+
 
 /* ---------------------- MEDIA QUERIES ---------------------- */
 
 /* == MEDIUM SCREENS / LANDSCAPE TABLETS (~992px - 1200px) == */
 @media (max-width: 1200px) {
   #gallery-container { width: 80%; }
+  .artwork-view { width: 65%; height: 75%; } /* Adjust 3D view size */
   #sidebar { width: 20%; }
-  #map { grid-template-columns: repeat(11, 20px); grid-template-rows: repeat(11, 20px); }
-  .map-cell { width: 20px; height: 20px; }
+  /* Map cell sizes are now relative (1fr), so #map width/height might need adjustment if fixed pixel sizes are desired */
+  /* #map { grid-template-columns: repeat(11, 20px); grid-template-rows: repeat(11, 20px); } */
+  /* .map-cell { width: 20px; height: 20px; } */
   #user-arrow { width: 11px; height: 11px; }
   .TitleTag { font-size: 1.0rem; }
   .GalleryTag, .InfoTag { font-size: 0.85rem; }
   #information { font-size: 0.8rem; }
   .FooterTag { font-size: 0.7rem; }
-  /* Adjust nav button size for medium screens */
   .nav-button { width: 40px; height: 40px; font-size: 1.1rem;}
   .nav-up-down .nav-button { width: 35px; height: 32px; font-size: 0.9rem; }
 }
 
 /* == TABLET (~768px - 991px) == */
 @media (max-width: 991px) {
-  #gallery-container { width: 70%; }
+  #gallery-container { width: 70%; perspective: 600px; } /* Adjust perspective */
+  .artwork-view { width: 75%; height: 75%; }
   #sidebar { width: 30%; }
-  #map { grid-template-columns: repeat(11, 18px); grid-template-rows: repeat(11, 18px); }
-  .map-cell { width: 18px; height: 18px; }
+  /* #map { grid-template-columns: repeat(11, 18px); grid-template-rows: repeat(11, 18px); } */
+  /* .map-cell { width: 18px; height: 18px; } */
   #user-arrow { width: 10px; height: 10px; }
   .TitleTag { font-size: 1.0rem; font-weight: normal; }
   .GalleryTag, .InfoTag { font-size: 0.8rem; }
   #information { font-size: 0.75rem; }
   .FooterTag { font-size: 0.65rem; }
   header, footer { padding: 0.75rem; }
-  /* Hide map toggle button on tablet */
-  #map-toggle-button { display: none; }
+  #map-toggle-button { display: none; } /* Original: Hide toggle on tablet */
 }
 
 /* == MOBILE (<= 767px) == */
 @media (max-width: 767px) {
-  #main-content { flex-direction: column; height: auto; overflow: hidden; } /* Hide overflow here? */
-  #gallery-container { width: 100%; height: 50vh; order: 1; }
+  #main-content { flex-direction: column; height: auto; /* overflow: hidden; */ } /* Allow content to scroll */
+  #gallery-container {
+    width: 100%;
+    height: 50vh; /* Or other desired height */
+    order: 1;
+    perspective: 500px; /* Less perspective on mobile */
+  }
+  .artwork-view {
+    width: 80%; /* Make artwork view larger percentage on mobile */
+    height: 80%;
+    border-width: 3px; /* Thinner border */
+  }
   #sidebar {
       width: 100%;
       order: 2;
-      height: auto; /* Let content determine height */
-      min-height: 45vh;
+      height: auto; 
+      min-height: 45vh; /* Or adjust as needed */
       flex-direction: column;
-      overflow-y: auto; /* Ensure sidebar scrolls if content + nav exceeds viewport */
+      overflow-y: auto; 
   }
 
-  /* Show mobile-only elements (like the toggle button) */
   .mobile-only {
-      display: inline-block;
+      display: inline-block; /* Show mobile map toggle */
   }
-  /* Nav controls are already visible, no rule needed here */
 
   #map-container, #info-container {
       width: 100%;
       padding: 0.8rem;
-      overflow-y: hidden; /* Let parent sidebar scroll */
-      flex-shrink: 1;
+      /* overflow-y: hidden; */ /* Let parent sidebar scroll */
+      flex-shrink: 1; /* Allow shrinking if needed */
   }
-  #map-container { flex-basis: auto; flex-shrink: 0; }
-  #info-container { flex-basis: 100px; flex-grow: 1; padding-top: 0.5rem; min-height: 50px; }
+  #map-container { flex-basis: auto; /* Let content determine height */ }
+  #info-container { flex-basis: auto; flex-grow: 1; padding-top: 0.5rem; min-height: 80px; } /* Give info some min-height */
 
-  #map { grid-template-columns: repeat(11, 18px); grid-template-rows: repeat(11, 18px); }
-  .map-cell { width: 18px; height: 18px; }
+  /* #map { grid-template-columns: repeat(11, 18px); grid-template-rows: repeat(11, 18px); } */
+  /* .map-cell { width: 18px; height: 18px; } */
+  #map { /* Ensure map is not overly large on mobile */
+    max-width: calc(18px * 11 + 4px); /* Example if cells are 18px */
+    max-height: calc(18px * 11 + 4px);
+  }
   #user-arrow { width: 12px; height: 12px; }
 
   .TitleTag { font-size: 1.0rem; letter-spacing: 0.5px; }
   .GalleryTag, .InfoTag { font-size: 0.8rem; }
-  #information { font-size: 0.75rem; line-height: 1.3; min-height: 40px; }
+  #information { font-size: 0.75rem; line-height: 1.3; min-height: 60px; }
   .FooterTag { font-size: 0.7rem; letter-spacing: 0.5px; }
 
   header, footer { padding: 0.7rem 0.625rem; min-height: 42px; }
   footer { justify-content: flex-end; }
 
-  /* Nav button size for standard mobile */
   .nav-button { width: 45px; height: 45px; font-size: 1.2rem; }
   .nav-up-down .nav-button { width: 40px; height: 35px; font-size: 1rem; }
 }
@@ -402,21 +494,24 @@ footer {
 /* == SMALL MOBILE (<= 480px) == */
 @media (max-width: 480px) {
    #gallery-container { height: 45vh; }
+   .artwork-view { width: 85%; height: 85%; }
    #sidebar { min-height: 50vh; }
-   #map { grid-template-columns: repeat(11, 15px); grid-template-rows: repeat(11, 15px); }
-  .map-cell { width: 15px; height: 15px; }
+   /* #map { grid-template-columns: repeat(11, 15px); grid-template-rows: repeat(11, 15px); } */
+   /* .map-cell { width: 15px; height: 15px; } */
+   #map {
+    max-width: calc(15px * 11 + 4px); /* Example if cells are 15px */
+    max-height: calc(15px * 11 + 4px);
+  }
   #user-arrow { width: 10px; height: 10px; }
 
   .TitleTag { font-size: 0.9rem; }
   .GalleryTag, .InfoTag { font-size: 0.75rem; }
-  #information { font-size: 0.7rem; line-height: 1.3; min-height: 30px;}
+  #information { font-size: 0.7rem; line-height: 1.3; min-height: 50px;}
   .FooterTag { font-size: 0.65rem; }
 
   header, footer { padding: 0.6rem 0.5rem; min-height: 40px; }
   #map-container, #info-container { padding: 0.6rem; }
 
-  /* Smaller nav buttons on very small screens */
   .nav-button { width: 40px; height: 40px; font-size: 1rem; }
   .nav-up-down .nav-button { width: 35px; height: 30px; font-size: 0.9rem; }
 }
-
