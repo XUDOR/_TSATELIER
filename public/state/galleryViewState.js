@@ -1,32 +1,19 @@
 // public/state/galleryViewState.js
 // Purpose: Manages the state of the main gallery view (#gallery-container),
 // including which artwork is displayed, its transformation, and visibility.
+// Version 2: Does not store direct DOM element references in the state.
 
 import { _updateState, getState as getFullState } from './indexState.js';
 
 /**
- * Stores a reference to the main gallery container DOM element in the state.
- * @param {HTMLElement} element - The DOM element for #gallery-container.
- */
-export function setGalleryContainerElement(element) {
-  _updateState(currentState => {
-    currentState.galleryView.containerElement = element;
-    if (element) {
-      console.log('[galleryViewState] Gallery container element stored in state.');
-    }
-  });
-}
-
-/**
- * Sets the ID of the artwork currently in view and its DOM element.
+ * Sets the ID of the artwork currently in view.
+ * The actual DOM element will be managed by galleryViewManager.js using this ID.
  * @param {string|null} artworkId - The ID of the artwork, or null if no artwork is in view.
- * @param {HTMLElement|null} artworkElement - The DOM element of the artwork being displayed, or null.
  */
-export function setGalleryViewArtwork(artworkId, artworkElement = null) {
+export function setGalleryViewArtwork(artworkId) {
   _updateState(currentState => {
     currentState.galleryView.currentArtworkIdInView = artworkId;
-    currentState.galleryView.currentArtworkElement = artworkElement;
-    // console.log(`[galleryViewState] Artwork in view set to: ${artworkId}`);
+    // console.log(`[galleryViewState] Artwork ID in view set to: ${artworkId}`);
   });
 }
 
@@ -68,10 +55,10 @@ export function setGalleryViewVisibility(isVisible) {
  */
 export function getGalleryViewInfo() {
   const { galleryView } = getFullState();
-  // Note: DOM elements (containerElement, currentArtworkElement) are not deep cloned by structuredClone.
-  // The references will be copied. This is usually fine as we don't intend to mutate these
-  // specific state properties directly from outside via a getter.
   return structuredClone(galleryView);
 }
 
-console.info('[galleryViewState.js] Gallery view state module loaded.');
+// Removed setGalleryContainerElement as the container element reference
+// will be managed locally by script.js and passed to galleryViewManager.
+
+console.info('[galleryViewState.js] Gallery view state module loaded (v2 - no DOM elements).');
